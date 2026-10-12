@@ -1,588 +1,750 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="icon" href="/favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Py2Cpp / Cpp2Py</title>
+    <title>Py2Cpp2Py | Конвертер Python ↔ C++</title>
     <style>
-        :root {
-            --bg: #1e1e2e;
-            --surface: #282a36;
-            --text: #cdd6f4;
-            --accent: #89b4fa;
-            --accent-hover: #74c7ec;
-            --border: #45475a;
-            --success: #a6e3a1;
-            --warning: #f9e2af;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d0d;
+            color: #e0e0e0;
             min-height: 100vh;
-        }
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { margin: 0; font-size: 2.5rem; color: var(--accent); }
-        .badges { margin-top: 10px; font-size: 0.9rem; color: var(--warning); font-weight: bold; letter-spacing: 1px; }
-
-        .direction-switcher {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: var(--surface);
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        .dir-btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            background: transparent;
-            color: var(--text);
-            transition: all 0.2s;
-        }
-        .dir-btn.active {
-            background: var(--accent);
-            color: #1e1e2e;
-        }
-        .dir-btn:hover:not(.active) {
-            background: var(--border);
+            flex-direction: column;
         }
 
-        .container {
-            width: 100%; max-width: 1200px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background-color: #111111;
+            border-bottom: 1px solid #2a2a2a;
         }
-        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-icon { font-size: 20px; color: #888; }
+
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: transparent;
+            color: #ccc;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .btn:hover { background: #1e1e1e; border-color: #666; color: #fff; }
+
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover { background: #e0e0e0; border-color: #e0e0e0; }
+
+        .btn-icon { font-size: 14px; }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 24px;
+            gap: 16px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .converter-row {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-height: 420px;
+        }
+
         .panel {
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 8px; padding: 15px; display: flex; flex-direction: column;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
         }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .panel-title { font-weight: bold; color: var(--accent); }
-        textarea {
-            width: 100%; height: 400px; background: #181825; color: var(--text);
-            border: 1px solid var(--border); border-radius: 4px; padding: 10px;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px; resize: vertical; box-sizing: border-box;
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
         }
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-        button { padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .btn-primary { background: var(--accent); color: #1e1e2e; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary { background: var(--border); color: var(--text); }
-        .btn-secondary:hover { background: #585b70; }
-        .examples { margin-bottom: 20px; text-align: center; }
-        .examples button {
-            margin: 0 5px; padding: 5px 15px; font-size: 0.9rem;
-            background: transparent; border: 1px solid var(--border); color: var(--text);
+
+        .panel-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #888;
         }
-        .examples button:hover { border-color: var(--accent); color: var(--accent); }
-        .warning {
-            max-width: 1200px; background: rgba(249,226,175,0.1);
-            border-left: 4px solid var(--warning); padding: 15px;
-            border-radius: 4px; font-size: 0.9rem; color: var(--warning); margin-top: 20px;
+
+        .panel-lang {
+            font-size: 12px;
+            color: #666;
+            font-family: 'Consolas', 'Courier New', monospace;
         }
-        footer { margin-top: 30px; font-size: 0.8rem; color: #6c7086; }
+
+        .panel-body { flex: 1; position: relative; }
+
+        .panel-body textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 380px;
+            background: transparent;
+            color: #d4d4d4;
+            border: none;
+            outline: none;
+            resize: none;
+            padding: 16px;
+            font-family: 'Consolas', 'Courier New', 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+
+        .panel-body textarea::placeholder { color: #555; }
+
+        .converter-middle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 8px;
+        }
+
+        .arrow-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            color: #aaa;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .arrow-btn:hover { background: #2a2a2a; border-color: #666; color: #fff; }
+        .arrow-btn.active { background: #fff; color: #000; border-color: #fff; }
+
+        .direction-label {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            writing-mode: vertical-rl;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #111111;
+            border-top: 1px solid #2a2a2a;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
+        .status-dot.ready { background: #888; }
+        .status-dot.processing { background: #aaa; animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        .toast {
+            position: fixed; bottom: 60px; right: 24px;
+            background: #2a2a2a; color: #ddd;
+            padding: 10px 20px; border-radius: 6px;
+            font-size: 13px; border: 1px solid #444;
+            opacity: 0; transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none; z-index: 1000;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        @media (max-width: 900px) {
+            .converter-row { flex-direction: column; min-height: auto; }
+            .converter-middle { flex-direction: row; padding: 8px 0; }
+            .direction-label { writing-mode: horizontal-tb; }
+            .panel-body textarea { min-height: 250px; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Py ⇄ Cpp</h1>
-    <p>Двунаправленный конвертер Python ↔ C++</p>
+    <div class="logo">
+        <span class="logo-icon">&lt;/&gt;</span>
+        Py2Cpp2Py
+    </div>
+    <div class="header-actions">
+        <button class="btn" onclick="clearAll()">🗑 Очистить</button>
+        <button class="btn" onclick="copyResult()">📋 Копировать</button>
+        <button class="btn btn-primary" onclick="convert()">⚡ Конвертировать</button>
+        <button class="btn" onclick="downloadFile()"> Скачать файл</button>
+    </div>
 </header>
 
-<div class="direction-switcher">
-    <button class="dir-btn active" id="btn-py2cpp" onclick="setDirection('py2cpp')">Python → C++</button>
-    <button class="dir-btn" id="btn-cpp2py" onclick="setDirection('cpp2py')">C++ → Python</button>
-</div>
-
-<div class="examples" id="examples-container"></div>
-
-<div class="container">
-    <div class="panel">
-        <div class="panel-header">
-            <span class="panel-title" id="left-title">Python (input.py)</span>
-            <button class="btn-secondary" onclick="clearCode()">Очистить</button>
+<main>
+    <div class="converter-row">
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title" id="pyTitle">Python (input.py)</span>
+                <span class="panel-lang">Python 3</span>
+            </div>
+            <div class="panel-body">
+                <textarea id="pythonInput" placeholder="# Введите код Python здесь...&#10;def hello():&#10;    print('Hello, World!')&#10;&#10;hello()" spellcheck="false"></textarea>
+            </div>
         </div>
-        <textarea id="leftCode" placeholder="Вставьте код сюда..."></textarea>
-    </div>
-    <div class="panel">
-        <div class="panel-header">
-            <span class="panel-title" id="right-title">C++ (main.cpp)</span>
-            <button class="btn-secondary" onclick="copyCode()">Копировать</button>
+
+        <div class="converter-middle">
+            <button class="arrow-btn active" id="arrowRight" onclick="setDirection('py2cpp')" title="Python → C++">→</button>
+            <span class="direction-label">направление</span>
+            <button class="arrow-btn" id="arrowLeft" onclick="setDirection('cpp2py')" title="C++ → Python">←</button>
         </div>
-        <textarea id="rightCode" placeholder="Здесь появится результат..." readonly></textarea>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title" id="cppTitle">C++ (main.cpp)</span>
+                <span class="panel-lang">C++ (GCC)</span>
+            </div>
+            <div class="panel-body">
+                <textarea id="cppOutput" placeholder="// Результат конвертации появится здесь..." spellcheck="false" readonly></textarea>
+            </div>
+        </div>
     </div>
+</main>
+
+<div class="status-bar">
+    <div class="status-dot ready" id="statusDot"></div>
+    <span id="statusText">Готов к работе</span>
 </div>
 
-<div class="controls">
-    <button class="btn-primary" onclick="convert()">⚡ Конвертировать</button>
-    <button class="btn-secondary" onclick="downloadCode()">Скачать файл</button>
-</div>
-
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-let direction = 'py2cpp';
-
-const examplesPy2Cpp = {
-    io: `name = input("Как тебя зовут? ")
-print("Привет,", name)`,
-    list: `my_list = [10, 20, 30]
-my_list.append(40)
-print("Длина:", len(my_list))
-
-for item in my_list:
-    print(item)`,
-    math: `a = 15
-b = 25
-c = 10
-minimum = min(a, b, c)
-maximum = max(a, b)
-print("Мин:", minimum, "Макс:", maximum)`,
-    types: `x = 42
-pi = 3.14
-greeting = "Hello"
-flag = True
-result = x + 10
-value = min(x, 100)
-unknown = some_func(x)
-print(x, pi, greeting, flag)`,
-    loop: `n = int(input())
-if n > 0:
-    print("Положительное")
-elif n == 0:
-    print("Ноль")
-else:
-    print("Отрицательное")
-
-for i in range(5):
-    print(i)`
-};
-
-const examplesCpp2Py = {
-    io: `#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    string name;
-    cout << "Как тебя зовут? ";
-    cin >> name;
-    cout << "Привет, " << name << endl;
-    return 0;
-}`,
-    list: `#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    vector<int> my_list = {10, 20, 30};
-    my_list.push_back(40);
-    cout << "Длина: " << my_list.size() << endl;
-    for (auto item : my_list) {
-        cout << item << endl;
-    }
-    return 0;
-}`,
-    math: `#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int a = 15, b = 25, c = 10;
-    int minimum = min({a, b, c});
-    int maximum = max({a, b});
-    cout << "Мин: " << minimum << " Макс: " << maximum << endl;
-    return 0;
-}`,
-    loop: `#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    int n;
-    cin >> n;
-    if (n > 0) {
-        cout << "Положительное" << endl;
-    } else if (n == 0) {
-        cout << "Ноль" << endl;
-    } else {
-        cout << "Отрицательное" << endl;
-    }
-    for (int i = 0; i < 5; i++) {
-        cout << i << endl;
-    }
-    return 0;
-}`
-};
+let currentDirection = 'py2cpp';
 
 function setDirection(dir) {
-    direction = dir;
-    document.getElementById('btn-py2cpp').classList.toggle('active', dir === 'py2cpp');
-    document.getElementById('btn-cpp2py').classList.toggle('active', dir === 'cpp2py');
-    
+    currentDirection = dir;
+    const arrowRight = document.getElementById('arrowRight');
+    const arrowLeft = document.getElementById('arrowLeft');
+    const pyTitle = document.getElementById('pyTitle');
+    const cppTitle = document.getElementById('cppTitle');
+    const pyInput = document.getElementById('pythonInput');
+    const cppOutput = document.getElementById('cppOutput');
+
     if (dir === 'py2cpp') {
-        document.getElementById('left-title').textContent = 'Python (input.py)';
-        document.getElementById('right-title').textContent = 'C++ (main.cpp)';
-        renderExamples(examplesPy2Cpp);
-        document.getElementById('warning-box').innerHTML = '<strong>⚠️ Важно:</strong> это статический конвертер. Тип переменной определяется по правой части. Если тип нельзя определить — используется <code>auto</code>. <code>min</code>/<code>max</code> оборачиваются в фигурные скобки.';
+        arrowRight.classList.add('active');
+        arrowLeft.classList.remove('active');
+        pyTitle.textContent = 'Python (input.py)';
+        cppTitle.textContent = 'C++ (main.cpp)';
+        pyInput.readOnly = false;
+        cppOutput.readOnly = true;
     } else {
-        document.getElementById('left-title').textContent = 'C++ (main.cpp)';
-        document.getElementById('right-title').textContent = 'Python (output.py)';
-        renderExamples(examplesCpp2Py);
-        document.getElementById('warning-box').innerHTML = '<strong>⚠️ Важно:</strong> конвертер убирает <code>#include</code>, <code>using namespace</code>, обёртку <code>main()</code>, фигурные скобки заменяет на отступы. Сложные шаблоны и многомерные структуры могут требовать ручной правки.';
+        arrowLeft.classList.add('active');
+        arrowRight.classList.remove('active');
+        pyTitle.textContent = 'Python (output.py)';
+        cppTitle.textContent = 'C++ (input.cpp)';
+        pyInput.readOnly = true;
+        cppOutput.readOnly = false;
     }
-    clearCode();
-}
-
-function renderExamples(examples) {
-    const container = document.getElementById('examples-container');
-    const labels = {
-        io: 'Ввод / вывод',
-        list: 'Списки (vector)',
-        math: 'min / max',
-        types: 'Типы и auto',
-        loop: 'Циклы и условия'
-    };
-    let html = 'Примеры: ';
-    for (const key in examples) {
-        if (labels[key]) {
-            html += `<button onclick="loadExample('${key}')">${labels[key]}</button>`;
-        }
-    }
-    container.innerHTML = html;
-}
-
-function loadExample(key) {
-    const examples = direction === 'py2cpp' ? examplesPy2Cpp : examplesCpp2Py;
-    document.getElementById('leftCode').value = examples[key];
-    convert();
-}
-
-function clearCode() {
-    document.getElementById('leftCode').value = '';
-    document.getElementById('rightCode').value = '';
-}
-
-function copyCode() {
-    const el = document.getElementById('rightCode');
-    el.select();
-    document.execCommand('copy');
-    alert('Скопировано!');
-}
-
-function downloadCode() {
-    const text = document.getElementById('rightCode').value;
-    if (!text) return;
-    const blob = new Blob([text], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = direction === 'py2cpp' ? 'main.cpp' : 'output.py';
-    a.click();
 }
 
 function convert() {
-    const code = document.getElementById('leftCode').value;
-    const result = direction === 'py2cpp' ? translateToCpp(code) : translateToPy(code);
-    document.getElementById('rightCode').value = result;
-}
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
 
-/* ═══════════════════════════════════════════════════════════
-   PYTHON → C++
-   ═══════════════════════════════════════════════════════════ */
+    statusDot.className = 'status-dot processing';
+    statusText.textContent = 'Конвертация...';
 
-function inferType(expr) {
-    expr = expr.trim().replace(/;$/, '').trim();
-    if (/^["'].*["']$/.test(expr))          return 'string';
-    if (expr === 'true' || expr === 'false') return 'bool';
-    if (/^-?\d+$/.test(expr))               return 'int';
-    if (/^-?\d+\.\d+$/.test(expr))          return 'double';
-    return 'auto';
-}
-
-function translateToCpp(pyCode) {
-    const lines = pyCode.split('\n');
-    const out = [];
-    const stack = [0];
-
-    out.push('#include <bits/stdc++.h>');
-    out.push('using namespace std;');
-    out.push('');
-    out.push('int main() {');
-
-    for (let i = 0; i < lines.length; i++) {
-        const raw = lines[i];
-        const trimmed = raw.trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-
-        const indent = raw.search(/\S/);
-        const isElifElse = trimmed.startsWith('elif ') || trimmed.startsWith('else');
-
-        while (stack.length > 1 && indent < stack[stack.length - 1]) {
-            const closedIndent = stack.pop();
-            if (!isElifElse) {
-                out.push(' '.repeat(closedIndent) + '}');
-            }
-        }
-
-        const cpp = translateLineToCpp(trimmed);
-        
-        const opensBlock = trimmed.endsWith(':') &&
-            /^(if |elif |else|while |for |def )/.test(trimmed);
-        if (opensBlock) {
-            stack.push(indent + 4);
-        }
-
-        const sub = cpp.split('\n');
-        for (const s of sub) {
-            out.push(' '.repeat(indent) + s);
-        }
-    }
-
-    while (stack.length > 1) {
-        const closedIndent = stack.pop();
-        out.push(' '.repeat(closedIndent) + '}');
-    }
-
-    out.push('    return 0;');
-    out.push('}');
-    return out.join('\n');
-}
-
-function translateLineToCpp(line) {
-    let isBlock = false;
-    if (line.endsWith(':') && /^(if |elif |else|while |for |def )/.test(line)) {
-        isBlock = true;
-        line = line.slice(0, -1);
-    }
-
-    line = line.replace(/\bTrue\b/g,  'true');
-    line = line.replace(/\bFalse\b/g, 'false');
-    line = line.replace(/\band\b/g,   '&&');
-    line = line.replace(/\bor\b/g,    '||');
-    line = line.replace(/\bnot\b/g,   '!');
-
-    line = line.replace(/\b(min|max)\(([^)]+)\)/g, '$1({$2})');
-
-    let m;
-    if ((m = line.match(/^([a-zA-Z_]\w*)\s*=\s*\[(.*)\]$/))) {
-        return `vector<int> ${m[1]} = {${m[2]}};`;
-    }
-    if ((m = line.match(/^([a-zA-Z_]\w*)\s*=\s*\[\]$/))) {
-        return `vector<int> ${m[1]};`;
-    }
-    line = line.replace(/([a-zA-Z_]\w*)\.append\((.*)\)/, '$1.push_back($2);');
-    line = line.replace(/len\(([a-zA-Z_]\w*)\)/g, '$1.size()');
-
-    const pm = line.match(/^print\((.*)\)$/);
-    if (pm) {
-        if (pm[1].trim() === '') return `cout << endl;`;
-        let args = pm[1].replace(/,\s*/g, ' << " " << ');
-        return `cout << ${args} << endl;`;
-    }
-
-    if ((m = line.match(/^([a-zA-Z_]\w*)\s*=\s*int\(input\(\)\)$/)))
-        return `int ${m[1]};\ncin >> ${m[1]};`;
-    if ((m = line.match(/^([a-zA-Z_]\w*)\s*=\s*float\(input\(\)\)$/)))
-        return `double ${m[1]};\ncin >> ${m[1]};`;
-    if ((m = line.match(/^([a-zA-Z_]\w*)\s*=\s*input\((.*)\)$/))) {
-        const prompt = m[2] ? `cout << ${m[2]};\n` : '';
-        return `${prompt}string ${m[1]};\ncin >> ${m[1]};`;
-    }
-
-    line = line.replace(/^if\s+(.*)$/,   'if ($1) {');
-    line = line.replace(/^elif\s+(.*)$/, '} else if ($1) {');
-    line = line.replace(/^else$/,        '} else {');
-    line = line.replace(/^while\s+(.*)$/, 'while ($1) {');
-    line = line.replace(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\((.*)\)$/,
-                         'for (int $1 = 0; $1 < $2; $1++) {');
-    line = line.replace(/^for\s+([a-zA-Z_]\w*)\s+in\s+([a-zA-Z_]\w*)$/,
-                         'for (auto $1 : $2) {');
-    line = line.replace(/^def\s+([a-zA-Z_]\w*)\((.*)\)$/, 'auto $1($2) {');
-
-    line = line.replace(/^return\s+(.*)$/, 'return $1;');
-    line = line.replace(/^return$/,        'return;');
-    line = line.replace(/\/\//g, '/');
-
-    if (!isBlock &&
-        !/^(cout|cin|if|while|for|return|\}|else|auto |int |double |string |bool |vector)/.test(line) &&
-        (m = line.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/))) {
-        const varName = m[1];
-        const expr    = m[2].replace(/;$/, '').trim();
-        const type    = inferType(expr);
-        return `${type} ${varName} = ${expr};`;
-    }
-
-    if (!isBlock && !/[;{}]$/.test(line.trim()) &&
-        !/^(cout|cin|if|while|for|return|\}|else)/.test(line)) {
-        line += ';';
-    }
-
-    return line;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   C++ → PYTHON
-   ═══════════════════════════════════════════════════════════ */
-
-function translateToPy(cppCode) {
-    // 1. Убираем служебные строки
-    let lines = cppCode.split('\n');
-    lines = lines.filter(l => {
-        const t = l.trim();
-        return t !== '' &&
-               !t.startsWith('#include') &&
-               !t.startsWith('using namespace') &&
-               !/^int\s+main\s*\(\s*\)\s*\{?\s*$/.test(t) &&
-               !/^int\s+main\s*\(\s*\)\s*\{$/.test(t);
-    });
-
-    const expanded = [];
-    let indent = 0;
-    for (const raw of lines) {
-        const t = raw.trim();
-        if (!t) continue;
-
-        if (/^\}\s*(else\s+if\s*\(.*\)\s*\{)?\s*(else\s*\{)?\s*$/.test(t) || t === '}') {
-            const m = t.match(/^\}\s*(else\s+if\s*\((.*)\)\s*\{|else\s*\{)\s*$/);
-            if (m) {
-                indent = Math.max(0, indent - 1);
-                if (m[1].startsWith('else if')) {
-                    expanded.push({ text: `elif ${m[2]}:`, indent });
-                } else {
-                    expanded.push({ text: `else:`, indent });
+    setTimeout(() => {
+        try {
+            if (currentDirection === 'py2cpp') {
+                const pyCode = document.getElementById('pythonInput').value.trim();
+                if (!pyCode) {
+                    showToast('Введите код Python для конвертации');
+                    statusDot.className = 'status-dot ready';
+                    statusText.textContent = 'Ошибка';
+                    return;
                 }
-                indent += 1;
+                const cppCode = pyToCpp(pyCode);
+                document.getElementById('cppOutput').value = cppCode;
+                showToast('Конвертация Python → C++ завершена');
             } else {
-                indent = Math.max(0, indent - 1);
+                const cppCode = document.getElementById('cppOutput').value.trim();
+                if (!cppCode) {
+                    showToast('Введите код C++ для конвертации');
+                    statusDot.className = 'status-dot ready';
+                    statusText.textContent = 'Ошибка';
+                    return;
+                }
+                const pyCode = cppToPy(cppCode);
+                document.getElementById('pythonInput').value = pyCode;
+                showToast('Конвертация C++ → Python завершена');
+            }
+        } catch (e) {
+            showToast('Ошибка конвертации: ' + e.message);
+        }
+
+        statusDot.className = 'status-dot ready';
+        statusText.textContent = 'Готов к работе';
+    }, 300);
+}
+
+function pyToCpp(code) {
+    let cpp = '#include <iostream>\n#include <string>\n#include <vector>\n#include <cmath>\nusing namespace std;\n\n';
+
+    const lines = code.split('\n');
+    let inMain = false;
+    let braceDepth = 0;
+
+    for (let line of lines) {
+        const trimmed = line.trim();
+
+        if (trimmed === '') {
+            cpp += '\n';
+            continue;
+        }
+
+        if (trimmed.startsWith('#')) {
+            cpp += '    // ' + trimmed.substring(1).trim() + '\n';
+            continue;
+        }
+
+        const defMatch = trimmed.match(/^def\s+(\w+)\s*\(([^)]*)\)\s*:/);
+        if (defMatch) {
+            const funcName = defMatch[1];
+            const params = defMatch[2] ? defMatch[2].split(',').map(p => {
+                const pname = p.trim().split(':')[0].split('=')[0].trim();
+                return 'int ' + pname;
+            }).join(', ') : '';
+            if (funcName === 'main') {
+                cpp += 'int main(' + params + ') {\n';
+                inMain = true;
+            } else {
+                cpp += 'void ' + funcName + '(' + params + ') {\n';
+            }
+            braceDepth++;
+            continue;
+        }
+
+        const printMatch = trimmed.match(/^print\s*\((.+)\)\s*$/);
+        if (printMatch) {
+            let arg = printMatch[1];
+            if (arg.startsWith("f'") || arg.startsWith('f"')) {
+                const quote = arg[1];
+                const inner = arg.slice(2, -1);
+                const parts = inner.split(/\{(\w+)\}/);
+                let expr = '';
+                for (let i = 0; i < parts.length; i++) {
+                    if (i % 2 === 0) {
+                        expr += '"' + parts[i] + '"';
+                    } else {
+                        expr += ' << ' + parts[i] + ' << ';
+                    }
+                }
+                expr = expr.replace(/" << "/g, '');
+                cpp += '    cout << ' + expr + ' << endl;\n';
+            } else if (arg.startsWith("'") || arg.startsWith('"')) {
+                cpp += '    cout << ' + arg + ' << endl;\n';
+            } else {
+                cpp += '    cout << ' + arg + ' << endl;\n';
             }
             continue;
         }
 
-        if (t.endsWith('{')) {
-            const head = t.slice(0, -1).trim();
-            const converted = convertCppLineToPy(head);
-            expanded.push({ text: converted, indent });
-            indent += 1;
+        const intInputMatch = trimmed.match(/^(\w+)\s*=\s*int\s*\(\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\)\s*$/);
+        if (intInputMatch) {
+            const varName = intInputMatch[1];
+            const prompt = intInputMatch[2] || '';
+            if (prompt) cpp += '    cout << "' + prompt + '";\n';
+            cpp += '    int ' + varName + ';\n    cin >> ' + varName + ';\n';
             continue;
         }
 
-        expanded.push({ text: convertCppLineToPy(t), indent });
-    }
-
-    return expanded.map(e => '    '.repeat(e.indent) + e.text).join('\n');
-}
-
-function convertCppLineToPy(line) {
-    if (!line) return '';
-
-    if (/^return\s+(.+);\s*$/.test(line)) return line.replace(/^return\s+(.+);\s*$/, 'return $1');
-    if (line.trim() === 'return;') return 'return';
-    if (line.trim() === 'return 0') return '';
-
-    const coutMatch = line.match(/^cout\s*<<\s*(.*?)(?:\s*<<\s*endl)?;\s*$/);
-    if (coutMatch) {
-        let content = coutMatch[1];
-        // Разбираем цепочку << " " <<
-        const parts = content.split(/\s*<<\s*/);
-        const args = [];
-        for (const p of parts) {
-            const pt = p.trim();
-            if (pt === '" "' || pt === '""') continue;
-            args.push(pt);
+        const floatInputMatch = trimmed.match(/^(\w+)\s*=\s*float\s*\(\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\)\s*$/);
+        if (floatInputMatch) {
+            const varName = floatInputMatch[1];
+            const prompt = floatInputMatch[2] || '';
+            if (prompt) cpp += '    cout << "' + prompt + '";\n';
+            cpp += '    double ' + varName + ';\n    cin >> ' + varName + ';\n';
+            continue;
         }
-        if (args.length === 0) return 'print()';
-        return `print(${args.join(', ')})`;
-    }
 
-    const cinMatch = line.match(/^cin\s*>>\s*([a-zA-Z_]\w*)\s*;\s*$/);
-    if (cinMatch) {
-        return `${cinMatch[1]} = input()`;
-    }
-
-    const declMatch = line.match(/^(int|double|float|string|bool|auto|vector\s*<\s*\w+\s*>)\s+([a-zA-Z_]\w*)\s*=\s*(.+);\s*$/);
-    if (declMatch) {
-        const type = declMatch[1].trim();
-        const name = declMatch[2];
-        let val = declMatch[3].trim();
-        if (type === 'bool') {
-            val = val.replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
+        const inputMatch = trimmed.match(/^(\w+)\s*=\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\s*$/);
+        if (inputMatch) {
+            const varName = inputMatch[1];
+            const prompt = inputMatch[2] || '';
+            if (prompt) cpp += '    cout << "' + prompt + '";\n';
+            cpp += '    string ' + varName + ';\n    getline(cin, ' + varName + ');\n';
+            continue;
         }
-        if (type.startsWith('vector')) {
-            val = val.replace(/^\{/, '[').replace(/\}$/, ']');
+
+        const forMatch = trimmed.match(/^for\s+(\w+)\s+in\s+range\s*\((.+)\)\s*:/);
+        if (forMatch) {
+            const varName = forMatch[1];
+            const rangeArg = forMatch[2];
+            const parts = rangeArg.split(',').map(s => s.trim());
+            let start, end, step;
+            if (parts.length === 1) { start = 0; end = parts[0]; step = 1; }
+            else if (parts.length === 2) { start = parts[0]; end = parts[1]; step = 1; }
+            else { start = parts[0]; end = parts[1]; step = parts[2]; }
+            cpp += '    for (int ' + varName + ' = ' + start + '; ' + varName + ' < ' + end + '; ' + varName + ' += ' + step + ') {\n';
+            braceDepth++;
+            continue;
         }
-        return `${name} = ${val}`;
-    }
 
-    const declNoInit = line.match(/^(int|double|float|string|bool|auto|vector\s*<\s*\w+\s*>)\s+([a-zA-Z_]\w*)\s*;\s*$/);
-    if (declNoInit) {
-        const type = declNoInit[1].trim();
-        const name = declNoInit[2];
-        if (type.startsWith('vector')) return `${name} = []`;
-        if (type === 'string') return `${name} = ""`;
-        if (type === 'bool') return `${name} = False`;
-        return `${name} = 0`;
-    }
+        const ifMatch = trimmed.match(/^if\s+(.+)\s*:/);
+        if (ifMatch) {
+            let cond = ifMatch[1]
+                .replace(/ and /g, ' && ')
+                .replace(/ or /g, ' || ')
+                .replace(/ not /g, '!')
+                .replace(/==/g, '==')
+                .replace(/!=/g, '!=');
+            cpp += '    if (' + cond + ') {\n';
+            braceDepth++;
+            continue;
+        }
 
-    const multiDecl = line.match(/^(int|double|float|string|bool|auto)\s+(.+);\s*$/);
-    if (multiDecl && multiDecl[2].includes(',')) {
-        const type = multiDecl[1];
-        const parts = multiDecl[2].split(',').map(s => s.trim());
-        const results = [];
-        for (const p of parts) {
-            const m = p.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
-            if (m) {
-                let val = m[2].trim();
-                if (type === 'bool') val = val.replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
-                results.push(`${m[1]} = ${val}`);
+        const elifMatch = trimmed.match(/^elif\s+(.+)\s*:/);
+        if (elifMatch) {
+            let cond = elifMatch[1]
+                .replace(/ and /g, ' && ')
+                .replace(/ or /g, ' || ')
+                .replace(/ not /g, '!');
+            cpp += '    } else if (' + cond + ') {\n';
+            continue;
+        }
+
+        if (trimmed === 'else:') {
+            cpp += '    } else {\n';
+            braceDepth++;
+            continue;
+        }
+
+        const whileMatch = trimmed.match(/^while\s+(.+)\s*:/);
+        if (whileMatch) {
+            let cond = whileMatch[1]
+                .replace(/ and /g, ' && ')
+                .replace(/ or /g, ' || ')
+                .replace(/ not /g, '!');
+            cpp += '    while (' + cond + ') {\n';
+            braceDepth++;
+            continue;
+        }
+
+        const returnMatch = trimmed.match(/^return\s+(.+)\s*$/);
+        if (returnMatch) {
+            cpp += '    return ' + returnMatch[1] + ';\n';
+            continue;
+        }
+        if (trimmed === 'return') {
+            cpp += '    return;\n';
+            continue;
+        }
+
+        const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)\s*$/);
+        if (assignMatch) {
+            const varName = assignMatch[1];
+            const value = assignMatch[2];
+            if (/^\d+$/.test(value)) {
+                cpp += '    int ' + varName + ' = ' + value + ';\n';
+            } else if (/^\d+\.\d+$/.test(value)) {
+                cpp += '    double ' + varName + ' = ' + value + ';\n';
+            } else if (/^["']/.test(value)) {
+                cpp += '    string ' + varName + ' = ' + value + ';\n';
+            } else if (/^\[/.test(value)) {
+                const arr = value.replace(/\[/g, '{').replace(/\]/g, '}');
+                cpp += '    vector<int> ' + varName + ' = ' + arr + ';\n';
+            } else if (/^(True|False)$/.test(value)) {
+                cpp += '    bool ' + varName + ' = ' + (value === 'True' ? 'true' : 'false') + ';\n';
+            } else if (/^(None)$/.test(value)) {
+                cpp += '    // ' + varName + ' = None\n';
+            } else {
+                cpp += '    auto ' + varName + ' = ' + value + ';\n';
             }
+            continue;
         }
-        return results.join('\n' + '    '.repeat(0));
+
+        const funcCallMatch = trimmed.match(/^(\w+)\s*\(([^)]*)\)\s*$/);
+        if (funcCallMatch) {
+            cpp += '    ' + funcCallMatch[1] + '(' + funcCallMatch[2] + ');\n';
+            continue;
+        }
+
+        const lenMatch = trimmed.match(/^(\w+)\s*=\s*len\s*\((\w+)\)\s*$/);
+        if (lenMatch) {
+            cpp += '    int ' + lenMatch[1] + ' = ' + lenMatch[2] + '.size();\n';
+            continue;
+        }
+
+        const appendMatch = trimmed.match(/^(\w+)\.append\s*\((.+)\)\s*$/);
+        if (appendMatch) {
+            cpp += '    ' + appendMatch[1] + '.push_back(' + appendMatch[2] + ');\n';
+            continue;
+        }
+
+        cpp += '    ' + trimmed + '\n';
     }
 
-    line = line.replace(/([a-zA-Z_]\w*)\.push_back\((.*)\)\s*;/, '$1.append($2)');
-
-    line = line.replace(/([a-zA-Z_]\w*)\.size\(\)/g, 'len($1)');
-
-    line = line.replace(/\b(min|max)\(\{([^}]*)\}\)/g, '$1($2)');
-
-    line = line.replace(/&&/g, ' and ');
-    line = line.replace(/\|\|/g, ' or ');
-    line = line.replace(/!(?!=)/g, 'not ');
-    line = line.replace(/\btrue\b/g, 'True');
-    line = line.replace(/\bfalse\b/g, 'False');
-
-    line = line.replace(/^if\s*\((.*)\)\s*$/, 'if $1:');
-    line = line.replace(/^else\s+if\s*\((.*)\)\s*$/, 'elif $1:');
-    line = line.replace(/^else\s*$/, 'else:');
-    line = line.replace(/^while\s*\((.*)\)\s*$/, 'while $1:');
-
-    const forRange = line.match(/^for\s*\(\s*int\s+([a-zA-Z_]\w*)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(.+?)\s*;\s*\1\s*\+\+\s*\)\s*$/);
-    if (forRange) {
-        return `for ${forRange[1]} in range(${forRange[3]}):`;
+    while (braceDepth > 0) {
+        cpp += '}\n';
+        braceDepth--;
     }
 
-    const forRangeBased = line.match(/^for\s*\(\s*(?:auto|int|double|float|string)\s+([a-zA-Z_]\w*)\s*:\s*([a-zA-Z_]\w*)\s*\)\s*$/);
-    if (forRangeBased) {
-        return `for ${forRangeBased[1]} in ${forRangeBased[2]}:`;
+    if (!inMain && !code.includes('def main')) {
+        const body = cpp.split('\n').slice(5).join('\n');
+        cpp = '#include <iostream>\n#include <string>\n#include <vector>\n#include <cmath>\nusing namespace std;\n\nint main() {\n' + body + '\n    return 0;\n}\n';
+    } else if (!cpp.includes('return 0')) {
+        cpp = cpp.replace(/}\s*$/, '    return 0;\n}\n');
     }
 
-    const funcDef = line.match(/^(?:auto|void|int|double|float|string|bool)\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*$/);
-    if (funcDef) {
-        return `def ${funcDef[1]}(${funcDef[2]}):`;
-    }
-
-    line = line.replace(/;\s*$/, '');
-
-    return line;
+    return cpp;
 }
 
-setDirection('py2cpp');
+function cppToPy(code) {
+    let py = '';
+    const lines = code.split('\n');
+
+    for (let line of lines) {
+        const trimmed = line.trim();
+
+        if (trimmed.startsWith('#include') || trimmed.startsWith('using namespace')) continue;
+        if (trimmed.match(/int\s+main\s*\(/)) continue;
+
+        const funcMatch = trimmed.match(/(?:void|int|double|string|bool|auto)\s+(\w+)\s*\(([^)]*)\)\s*\{?/);
+        if (funcMatch && !trimmed.startsWith('for') && !trimmed.startsWith('if') && !trimmed.startsWith('while')) {
+            const funcName = funcMatch[1];
+            const params = funcMatch[2] ? funcMatch[2].split(',').map(p => p.trim().split(/\s+/).pop()).join(', ') : '';
+            py += 'def ' + funcName + '(' + params + '):\n';
+            continue;
+        }
+
+        const coutMatch = trimmed.match(/cout\s*<<\s*(.+?)\s*<<\s*endl\s*;/);
+        if (coutMatch) {
+            let arg = coutMatch[1];
+            arg = arg.replace(/\s*<<\s*/g, '');
+            arg = arg.replace(/^["']|["']$/g, '');
+            py += '    print("' + arg + '")\n';
+            continue;
+        }
+
+        const coutVarMatch = trimmed.match(/cout\s*<<\s*(\w+)\s*<<\s*endl\s*;/);
+        if (coutVarMatch) {
+            py += '    print(' + coutVarMatch[1] + ')\n';
+            continue;
+        }
+
+        const cinMatch = trimmed.match(/cin\s*>>\s*(\w+)\s*;/);
+        if (cinMatch) {
+            py += '    ' + cinMatch[1] + ' = input()\n';
+            continue;
+        }
+
+        if (trimmed === 'return 0;') continue;
+
+        const varMatch = trimmed.match(/(?:int|double|string|bool|auto|long|float|char)\s+(\w+)\s*=\s*(.+?);/);
+        if (varMatch) {
+            py += '    ' + varMatch[1] + ' = ' + varMatch[2] + '\n';
+            continue;
+        }
+
+        const varDeclMatch = trimmed.match(/(?:int|double|string|bool|auto|long|float|char)\s+(\w+)\s*;/);
+        if (varDeclMatch) {
+            py += '    ' + varDeclMatch[1] + ' = 0\n';
+            continue;
+        }
+
+        const forMatch = trimmed.match(/for\s*\(\s*(?:int\s+)?(\w+)\s*=\s*(\d+)\s*;\s*\w+\s*<\s*(\w+)\s*;\s*\w+\+\+\s*\)\s*\{?/);
+        if (forMatch) {
+            py += '    for ' + forMatch[1] + ' in range(' + forMatch[2] + ', ' + forMatch[3] + '):\n';
+            continue;
+        }
+
+        const ifMatch = trimmed.match(/if\s*\((.+)\)\s*\{?/);
+        if (ifMatch) {
+            let cond = ifMatch[1]
+                .replace(/&&/g, ' and ')
+                .replace(/\|\|/g, ' or ')
+                .replace(/!/g, ' not ');
+            py += '    if ' + cond + ':\n';
+            continue;
+        }
+
+        const elifMatch = trimmed.match(/\}\s*else\s+if\s*\((.+)\)\s*\{?/);
+        if (elifMatch) {
+            let cond = elifMatch[1]
+                .replace(/&&/g, ' and ')
+                .replace(/\|\|/g, ' or ');
+            py += '    elif ' + cond + ':\n';
+            continue;
+        }
+
+        if (trimmed.match(/\}\s*else\s*\{?/)) {
+            py += '    else:\n';
+            continue;
+        }
+
+        const whileMatch = trimmed.match(/while\s*\((.+)\)\s*\{?/);
+        if (whileMatch) {
+            let cond = whileMatch[1]
+                .replace(/&&/g, ' and ')
+                .replace(/\|\|/g, ' or ')
+                .replace(/!/g, ' not ');
+            py += '    while ' + cond + ':\n';
+            continue;
+        }
+
+        const returnMatch = trimmed.match(/return\s+(.+);/);
+        if (returnMatch) {
+            py += '    return ' + returnMatch[1] + '\n';
+            continue;
+        }
+
+        const pushMatch = trimmed.match(/(\w+)\.push_back\s*\((.+)\)\s*;/);
+        if (pushMatch) {
+            py += '    ' + pushMatch[1] + '.append(' + pushMatch[2] + ')\n';
+            continue;
+        }
+
+        const sizeMatch = trimmed.match(/(\w+)\s*=\s*(\w+)\.size\s*\(\)\s*;/);
+        if (sizeMatch) {
+            py += '    ' + sizeMatch[1] + ' = len(' + sizeMatch[2] + ')\n';
+            continue;
+        }
+
+        if (trimmed === '}') continue;
+
+        if (trimmed.startsWith('//')) {
+            py += '    # ' + trimmed.substring(2).trim() + '\n';
+            continue;
+        }
+
+        const callMatch = trimmed.match(/(\w+)\s*\(([^)]*)\)\s*;/);
+        if (callMatch) {
+            py += '    ' + callMatch[1] + '(' + callMatch[2] + ')\n';
+            continue;
+        }
+
+        if (trimmed) {
+            py += '    ' + trimmed.replace(/;$/, '') + '\n';
+        }
+    }
+
+    return py || '# Конвертированный код из C++\n';
+}
+
+function clearAll() {
+    document.getElementById('pythonInput').value = '';
+    document.getElementById('cppOutput').value = '';
+    showToast('Очищено');
+}
+
+function copyResult() {
+    let text = '';
+    if (currentDirection === 'py2cpp') {
+        text = document.getElementById('cppOutput').value;
+    } else {
+        text = document.getElementById('pythonInput').value;
+    }
+    if (!text) { showToast('Нечего копировать'); return; }
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Скопировано в буфер обмена');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Скопировано в буфер обмена');
+    });
+}
+
+function downloadFile() {
+    let content, filename;
+    if (currentDirection === 'py2cpp') {
+        content = document.getElementById('cppOutput').value;
+        filename = 'main.cpp';
+    } else {
+        content = document.getElementById('pythonInput').value;
+        filename = 'output.py';
+    }
+    if (!content) { showToast('Нечего скачивать'); return; }
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Файл ' + filename + ' скачан');
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 4;
+        }
+    });
+});
 </script>
 
 </body>
