@@ -4,10 +4,13 @@
     <link rel="icon" href="/favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Онлайн-конвертер кода Python ↔ C++ прямо в браузере: функции, циклы, списки, строки, ввод и вывод.">
+    <meta property="og:title" content="Py2Cpp2Py — конвертер Python ↔ C++">
+    <meta property="og:description" content="Переводит Python в C++ и обратно прямо в браузере, без сервера.">
+    <meta property="og:type" content="website">
     <title>Py2Cpp2Py | Конвертер Python ↔ C++</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0d0d0d;
@@ -16,7 +19,6 @@
             display: flex;
             flex-direction: column;
         }
-
         header {
             display: flex;
             align-items: center;
@@ -25,7 +27,6 @@
             background-color: #111111;
             border-bottom: 1px solid #2a2a2a;
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -35,11 +36,8 @@
             color: #ffffff;
             letter-spacing: 0.5px;
         }
-
         .logo-icon { font-size: 20px; color: #888; }
-
         .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
         .btn {
             display: inline-flex;
             align-items: center;
@@ -55,20 +53,15 @@
             transition: all 0.2s ease;
             user-select: none;
         }
-
         .btn:hover { background: #1e1e1e; border-color: #666; color: #fff; }
-
         .btn-primary {
             background: #ffffff;
             color: #000000;
             border-color: #ffffff;
             font-weight: 600;
         }
-
         .btn-primary:hover { background: #e0e0e0; border-color: #e0e0e0; }
-
         .btn-icon { font-size: 14px; }
-
         main {
             flex: 1;
             display: flex;
@@ -79,14 +72,12 @@
             width: 100%;
             margin: 0 auto;
         }
-
         .converter-row {
             display: flex;
             gap: 16px;
             flex: 1;
             min-height: 420px;
         }
-
         .panel {
             flex: 1;
             display: flex;
@@ -96,7 +87,6 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
         .panel-header {
             display: flex;
             align-items: center;
@@ -105,7 +95,6 @@
             background: #1a1a1a;
             border-bottom: 1px solid #2a2a2a;
         }
-
         .panel-title {
             font-size: 12px;
             font-weight: 600;
@@ -113,15 +102,12 @@
             text-transform: uppercase;
             color: #888;
         }
-
         .panel-lang {
             font-size: 12px;
             color: #666;
             font-family: 'Consolas', 'Courier New', monospace;
         }
-
         .panel-body { flex: 1; position: relative; }
-
         .panel-body textarea {
             width: 100%;
             height: 100%;
@@ -137,9 +123,7 @@
             line-height: 1.6;
             tab-size: 4;
         }
-
         .panel-body textarea::placeholder { color: #555; }
-
         .converter-middle {
             display: flex;
             flex-direction: column;
@@ -148,7 +132,6 @@
             gap: 12px;
             padding: 0 8px;
         }
-
         .arrow-btn {
             width: 44px; height: 44px;
             border-radius: 50%;
@@ -162,10 +145,8 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
-
         .arrow-btn:hover { background: #2a2a2a; border-color: #666; color: #fff; }
         .arrow-btn.active { background: #fff; color: #000; border-color: #fff; }
-
         .direction-label {
             font-size: 10px;
             color: #555;
@@ -173,7 +154,6 @@
             letter-spacing: 1px;
             writing-mode: vertical-rl;
         }
-
         .status-bar {
             display: flex;
             align-items: center;
@@ -184,13 +164,54 @@
             font-size: 12px;
             color: #666;
         }
-
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
         .status-dot.ready { background: #888; }
         .status-dot.processing { background: #aaa; animation: pulse 1s infinite; }
-
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
+        .panel-py { order: 1; }
+        .converter-middle { order: 2; }
+        .panel-cpp { order: 3; }
+        .converter-row.reversed .panel-py { order: 3; }
+        .converter-row.reversed .panel-cpp { order: 1; }
+        .direction-text {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            writing-mode: vertical-rl;
+            white-space: nowrap;
+        }
+        .panel-body textarea[readonly] { color: #bdbdbd; }
+        .panel-body textarea { white-space: pre; overflow-wrap: normal; overflow-x: auto; }
+        .warnings {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .warnings[hidden] { display: none; }
+        .warnings summary {
+            padding: 10px 16px;
+            background: #1a1a1a;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #aaa;
+            cursor: pointer;
+            user-select: none;
+        }
+        .warnings ul {
+            list-style: none;
+            padding: 8px 16px 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #bbb;
+        }
+        .warnings li::before { content: '— '; color: #666; }
+        .hint { margin-left: auto; color: #555; }
         .toast {
             position: fixed; bottom: 60px; right: 24px;
             background: #2a2a2a; color: #ddd;
@@ -201,22 +222,26 @@
             pointer-events: none; z-index: 1000;
         }
         .toast.show { opacity: 1; transform: translateY(0); }
-
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
-
         @media (max-width: 900px) {
             .converter-row { flex-direction: column; min-height: auto; }
             .converter-middle { flex-direction: row; padding: 8px 0; }
-            .direction-label { writing-mode: horizontal-tb; }
+            .direction-label, .direction-text { writing-mode: horizontal-tb; }
+            .hint { display: none; }
+        }
+        @media (max-width: 600px) {
+            header { flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+            .header-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .header-actions .btn { justify-content: center; }
+            main { padding: 16px; }
             .panel-body textarea { min-height: 250px; }
         }
     </style>
 </head>
 <body>
-
 <header>
     <div class="logo">
         <span class="logo-icon">&lt;/&gt;</span>
@@ -226,13 +251,12 @@
         <button class="btn" onclick="clearAll()">🗑 Очистить</button>
         <button class="btn" onclick="copyResult()">📋 Копировать</button>
         <button class="btn btn-primary" onclick="convert()">⚡ Конвертировать</button>
-        <button class="btn" onclick="downloadFile()"> Скачать файл</button>
+        <button class="btn" onclick="downloadFile()">💾 Скачать файл</button>
     </div>
 </header>
-
 <main>
     <div class="converter-row">
-        <div class="panel">
+        <div class="panel panel-py">
             <div class="panel-header">
                 <span class="panel-title" id="pyTitle">Python (input.py)</span>
                 <span class="panel-lang">Python 3</span>
@@ -241,14 +265,11 @@
                 <textarea id="pythonInput" placeholder="# Введите код Python здесь...&#10;def hello():&#10;    print('Hello, World!')&#10;&#10;hello()" spellcheck="false"></textarea>
             </div>
         </div>
-
         <div class="converter-middle">
-            <button class="arrow-btn active" id="arrowRight" onclick="setDirection('py2cpp')" title="Python → C++">→</button>
-            <span class="direction-label">направление</span>
-            <button class="arrow-btn" id="arrowLeft" onclick="setDirection('cpp2py')" title="C++ → Python">←</button>
+            <button class="arrow-btn active" id="swapBtn" onclick="toggleDirection()" title="Поменять направление" aria-label="Поменять направление">⇄</button>
+            <span class="direction-text" id="directionText">Python → C++</span>
         </div>
-
-        <div class="panel">
+        <div class="panel panel-cpp">
             <div class="panel-header">
                 <span class="panel-title" id="cppTitle">C++ (main.cpp)</span>
                 <span class="panel-lang">C++ (GCC)</span>
@@ -258,435 +279,3134 @@
             </div>
         </div>
     </div>
+    <details class="warnings" id="warnings" open hidden>
+        <summary id="warningsTitle">Предупреждения</summary>
+        <ul id="warningsList"></ul>
+    </details>
 </main>
-
 <div class="status-bar">
     <div class="status-dot ready" id="statusDot"></div>
     <span id="statusText">Готов к работе</span>
+    <span class="hint">Ctrl + Enter — конвертировать</span>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-let currentDirection = 'py2cpp';
+/* ============================================================
+ * Python → C++
+ * Разбор по отступам в дерево блоков + разбор выражений (Pratt),
+ * вывод типов, объявление переменных один раз, прототипы функций.
+ * ============================================================ */
+const PyToCpp = (() => {
 
+  /* ---------- Токенизатор выражений Python ---------- */
+  const PY_OPS = ['**=', '//=', '>>=', '<<=', '**', '//', '==', '!=', '<=', '>=', '+=', '-=', '*=', '/=', '%=',
+    '&=', '|=', '^=', '->', '<<', '>>', '+', '-', '*', '/', '%', '<', '>', '=', '(', ')', '[', ']', '{', '}',
+    ',', ':', '.', '&', '|', '^', '~', ';'];
+
+  function decodePyString(body, raw) {
+    if (raw) return body;
+    let out = '';
+    for (let i = 0; i < body.length; i++) {
+      const c = body[i];
+      if (c !== '\\') { out += c; continue; }
+      const n = body[++i];
+      const map = { n: '\n', t: '\t', r: '\r', '\\': '\\', "'": "'", '"': '"', '0': '\0', a: '\x07', b: '\b', f: '\f', v: '\v' };
+      if (n in map) out += map[n];
+      else if (n === 'x') { out += String.fromCharCode(parseInt(body.substr(i + 1, 2), 16)); i += 2; }
+      else if (n === 'u') { out += String.fromCharCode(parseInt(body.substr(i + 1, 4), 16)); i += 4; }
+      else if (n === '\n') { /* продолжение строки */ }
+      else out += '\\' + n;
+    }
+    return out;
+  }
+
+  function tokenize(src) {
+    const toks = [];
+    let i = 0;
+    while (i < src.length) {
+      const c = src[i];
+      if (c === ' ' || c === '\t' || c === '\n' || c === '\r' || c === '\\') { i++; continue; }
+      if (c === '#') { while (i < src.length && src[i] !== '\n') i++; continue; }
+      // строки с префиксами (f, r, b, rf, fr ...)
+      const pm = /^([rRbBfFuU]{0,2})("""|'''|"|')/.exec(src.slice(i));
+      if (pm && (pm[1] === '' || /^[a-zA-Z]+$/.test(pm[1]))) {
+        const prefix = pm[1].toLowerCase();
+        const q = pm[2];
+        let j = i + pm[0].length;
+        let body = '';
+        while (j < src.length && src.substr(j, q.length) !== q) {
+          if (src[j] === '\\' && !prefix.includes('r')) { body += src[j] + src[j + 1]; j += 2; continue; }
+          if (src[j] === '\\') { body += src[j] + (src[j + 1] || ''); j += 2; continue; }
+          body += src[j++];
+        }
+        if (j >= src.length) throw new Error('незакрытая строка');
+        j += q.length;
+        toks.push({ t: prefix.includes('f') ? 'fstr' : 'str', v: prefix.includes('f') ? body : decodePyString(body, prefix.includes('r')), raw: prefix.includes('r') });
+        i = j; continue;
+      }
+      const num = /^(0[xX][0-9a-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(\d[\d_]*)?\.?\d[\d_]*([eE][+-]?\d+)?|\d[\d_]*\.)/.exec(src.slice(i));
+      if (num && /[\d.]/.test(c) && num[0] !== '.') {
+        const v = num[0].replace(/_/g, '');
+        const isFloat = /[.eE]/.test(v) && !/^0[xX]/.test(v);
+        toks.push({ t: 'num', v, isFloat });
+        i += num[0].length; continue;
+      }
+      const id = /^[A-Za-z_\u0400-\u04FF][\w\u0400-\u04FF]*/.exec(src.slice(i));
+      if (id) { toks.push({ t: 'id', v: id[0] }); i += id[0].length; continue; }
+      const op = PY_OPS.find(o => src.startsWith(o, i));
+      if (op) { toks.push({ t: 'op', v: op }); i += op.length; continue; }
+      throw new Error('неизвестный символ «' + c + '»');
+    }
+    toks.push({ t: 'eof', v: '' });
+    return toks;
+  }
+
+  /* ---------- Парсер выражений (Pratt) ---------- */
+  class ExprParser {
+    constructor(toks) { this.toks = toks; this.p = 0; }
+    peek(o = 0) { return this.toks[this.p + o]; }
+    next() { return this.toks[this.p++]; }
+    is(v, o = 0) { const t = this.peek(o); return t && (t.t === 'op' || t.t === 'id') && t.v === v; }
+    accept(v) { if (this.is(v)) { this.p++; return true; } return false; }
+    expect(v) { if (!this.accept(v)) throw new Error('ожидалось «' + v + '», найдено «' + (this.peek().v || 'конец строки') + '»'); }
+    atEnd() { return this.peek().t === 'eof'; }
+
+    // список через запятую; одиночное выражение без запятой → само выражение
+    exprList() {
+      const first = this.expr();
+      if (!this.is(',')) return first;
+      const items = [first];
+      while (this.accept(',')) { if (this.atEnd() || this.is(')') || this.is('=') || this.is(':')) break; items.push(this.expr()); }
+      return { k: 'tuple', items };
+    }
+    expr() { return this.ternary(); }
+    ternary() {
+      if (this.is('lambda')) throw new Error('lambda не поддерживается');
+      const a = this.or();
+      if (this.is('if') ) {
+        this.next();
+        const c = this.or();
+        this.expect('else');
+        const b = this.ternary();
+        return { k: 'ifexp', c, a, b };
+      }
+      return a;
+    }
+    or() { let l = this.and(); while (this.accept('or')) l = { k: 'logic', op: 'or', l, r: this.and() }; return l; }
+    and() { let l = this.not(); while (this.accept('and')) l = { k: 'logic', op: 'and', l, r: this.not() }; return l; }
+    not() { if (this.accept('not')) return { k: 'not', x: this.not() }; return this.cmp(); }
+    cmp() {
+      const first = this.bitor();
+      const ops = [], items = [first];
+      for (;;) {
+        let op = null;
+        const t = this.peek();
+        if (t.t === 'op' && ['<', '>', '==', '!=', '<=', '>='].includes(t.v)) { op = t.v; this.next(); }
+        else if (this.is('in')) { op = 'in'; this.next(); }
+        else if (this.is('not') && this.is('in', 1)) { op = 'not in'; this.p += 2; }
+        else if (this.is('is')) { this.next(); op = this.accept('not') ? '!=' : '=='; }
+        if (!op) break;
+        ops.push(op); items.push(this.bitor());
+      }
+      return ops.length ? { k: 'cmp', ops, items } : first;
+    }
+    binLevel(next, ops) {
+      let l = next();
+      for (;;) {
+        const t = this.peek();
+        if (t.t === 'op' && ops.includes(t.v)) { this.next(); l = { k: 'bin', op: t.v, l, r: next() }; }
+        else return l;
+      }
+    }
+    bitor() { return this.binLevel(() => this.bitxor(), ['|']); }
+    bitxor() { return this.binLevel(() => this.bitand(), ['^']); }
+    bitand() { return this.binLevel(() => this.shift(), ['&']); }
+    shift() { return this.binLevel(() => this.arith(), ['<<', '>>']); }
+    arith() { return this.binLevel(() => this.term(), ['+', '-']); }
+    term() { return this.binLevel(() => this.unary(), ['*', '/', '//', '%']); }
+    unary() {
+      const t = this.peek();
+      if (t.t === 'op' && ['-', '+', '~'].includes(t.v)) { this.next(); return { k: 'un', op: t.v, x: this.unary() }; }
+      return this.power();
+    }
+    power() {
+      const base = this.postfix();
+      if (this.accept('**')) return { k: 'bin', op: '**', l: base, r: this.unary() };
+      return base;
+    }
+    postfix() {
+      let x = this.atom();
+      for (;;) {
+        if (this.accept('(')) {
+          const args = [], kwargs = {};
+          while (!this.is(')')) {
+            if (this.peek().t === 'id' && this.is('=', 1)) { const n = this.next().v; this.next(); kwargs[n] = this.expr(); }
+            else if (this.is('*')) throw new Error('распаковка *args не поддерживается');
+            else args.push(this.expr());
+            if (!this.accept(',')) break;
+          }
+          this.expect(')');
+          x = { k: 'call', fn: x, args, kwargs };
+        } else if (this.accept('[')) {
+          if (this.is(':') || this.slicey()) {
+            const part = () => (this.is(':') || this.is(']')) ? null : this.expr();
+            const a = part(); this.expect(':');
+            const b = part();
+            let c = null;
+            if (this.accept(':')) c = part();
+            this.expect(']');
+            x = { k: 'slice', obj: x, a, b, c };
+            continue;
+          }
+          const idx = this.expr();
+          this.expect(']');
+          x = { k: 'index', obj: x, idx };
+        } else if (this.accept('.')) {
+          const n = this.next();
+          if (n.t !== 'id') throw new Error('ожидалось имя после точки');
+          x = { k: 'attr', obj: x, name: n.v };
+        } else return x;
+      }
+    }
+    slicey() { // есть ли ':' на верхнем уровне до ']'
+      let d = 0;
+      for (let i = this.p; i < this.toks.length; i++) {
+        const t = this.toks[i];
+        if (t.t !== 'op') continue;
+        if ('([{'.includes(t.v)) d++;
+        else if (')}'.includes(t.v)) d--;
+        else if (t.v === ']') { if (d === 0) return false; d--; }
+        else if (t.v === ':' && d === 0) return true;
+      }
+      return false;
+    }
+    atom() {
+      const t = this.next();
+      if (t.t === 'num') return { k: 'num', v: t.v, isFloat: t.isFloat };
+      if (t.t === 'str' || t.t === 'fstr') {
+        // склейка соседних строковых литералов
+        let node = t.t === 'str' ? { k: 'str', v: t.v } : { k: 'fstr', parts: parseFString(t.v) };
+        while (this.peek().t === 'str' || this.peek().t === 'fstr') {
+          const n = this.next();
+          const parts = (node.k === 'str' ? [node.v] : node.parts).concat(n.t === 'str' ? [n.v] : parseFString(n.v));
+          node = parts.every(p => typeof p === 'string') ? { k: 'str', v: parts.join('') } : { k: 'fstr', parts };
+        }
+        return node;
+      }
+      if (t.t === 'id') {
+        if (t.v === 'True' || t.v === 'False') return { k: 'bool', v: t.v === 'True' };
+        if (t.v === 'None') return { k: 'none' };
+        if (['lambda', 'yield', 'await'].includes(t.v)) throw new Error('«' + t.v + '» не поддерживается');
+        return { k: 'name', v: t.v };
+      }
+      if (t.v === '(') {
+        if (this.accept(')')) return { k: 'tuple', items: [] };
+        const e = this.exprList();
+        this.expect(')');
+        return e.k === 'tuple' ? e : { k: 'paren', x: e };
+      }
+      if (t.v === '[') {
+        const items = [];
+        while (!this.is(']')) {
+          items.push(this.expr());
+          if (this.is('for')) throw new Error('генераторы списков не поддерживаются');
+          if (!this.accept(',')) break;
+        }
+        this.expect(']');
+        return { k: 'list', items };
+      }
+      if (t.v === '{') throw new Error('словари и множества не поддерживаются');
+      throw new Error('неожиданный токен «' + (t.v || 'конец строки') + '»');
+    }
+  }
+
+  function parseExpr(src) {
+    const p = new ExprParser(tokenize(src));
+    const e = p.exprList();
+    if (!p.atEnd()) throw new Error('лишний текст: «' + p.peek().v + '»');
+    return e;
+  }
+
+  // f"Привет, {name}! {x + 1:.2f}" → ['Привет, ', {expr, fmt}, '! ', ...]
+  function parseFString(body) {
+    const parts = [];
+    let lit = '', i = 0;
+    while (i < body.length) {
+      const c = body[i];
+      if (c === '{' && body[i + 1] === '{') { lit += '{'; i += 2; continue; }
+      if (c === '}' && body[i + 1] === '}') { lit += '}'; i += 2; continue; }
+      if (c === '{') {
+        let d = 1, j = i + 1, inner = '';
+        let q = null;
+        while (j < body.length && d > 0) {
+          const ch = body[j];
+          if (q) { if (ch === q) q = null; }
+          else if (ch === '"' || ch === "'") q = ch;
+          else if (ch === '{' || ch === '[' || ch === '(') d++;
+          else if (ch === '}' || ch === ']' || ch === ')') { d--; if (d === 0 && ch === '}') break; }
+          inner += ch; j++;
+        }
+        if (lit) parts.push(decodePyString(lit)), lit = '';
+        // формат-спецификатор после ':' на верхнем уровне
+        let fmt = null, exprSrc = inner;
+        let dd = 0;
+        for (let k = 0; k < inner.length; k++) {
+          const ch = inner[k];
+          if ('([{'.includes(ch)) dd++; else if (')]}'.includes(ch)) dd--;
+          else if (ch === '!' && dd === 0 && inner[k + 1] !== '=') { exprSrc = inner.slice(0, k); break; }
+          else if (ch === ':' && dd === 0) { exprSrc = inner.slice(0, k); fmt = inner.slice(k + 1); break; }
+        }
+        if (exprSrc.trim().endsWith('=')) throw new Error('f-строки вида {x=} не поддерживаются');
+        parts.push({ expr: parseExpr(exprSrc.trim()), fmt });
+        i = j + 1; continue;
+      }
+      lit += c; i++;
+    }
+    if (lit) parts.push(decodePyString(lit));
+    return parts;
+  }
+
+  /* ---------- Разбор строк в дерево блоков ---------- */
+  function logicalLines(code) {
+    // склеиваем строки внутри скобок/тройных кавычек и с переносом "\"
+    const raw = code.replace(/\r\n?/g, '\n').split('\n');
+    const out = [];
+    let buf = '', startLine = 0, depth = 0, inTriple = null;
+    for (let n = 0; n < raw.length; n++) {
+      const line = raw[n];
+      if (!buf) startLine = n + 1;
+      buf += (buf ? '\n' : '') + line;
+      // обновляем глубину скобок по строке
+      let q = inTriple ? inTriple : null;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (q) {
+          if (q.length === 3 && line.startsWith(q, i)) { q = null; i += 2; }
+          else if (q.length === 1 && c === '\\') i++;
+          else if (q.length === 1 && c === q) q = null;
+          continue;
+        }
+        if (c === '#') break;
+        if (line.startsWith('"""', i) || line.startsWith("'''", i)) { q = line.substr(i, 3); i += 2; continue; }
+        if (c === '"' || c === "'") { q = c; continue; }
+        if ('([{'.includes(c)) depth++;
+        else if (')]}'.includes(c)) depth--;
+      }
+      inTriple = q && q.length === 3 ? q : null;
+      if (depth > 0 || inTriple || /\\\s*$/.test(line)) continue;
+      out.push({ text: buf, line: startLine });
+      buf = ''; depth = 0;
+    }
+    if (buf) out.push({ text: buf, line: startLine });
+    return out;
+  }
+
+  // отделяет комментарий в конце строки (вне строк)
+  function splitComment(s) {
+    let q = null;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (q) {
+        if (c === '\\') { i++; continue; }
+        if (q.length === 3 ? s.startsWith(q, i) : c === q) { if (q.length === 3) i += 2; q = null; }
+        continue;
+      }
+      if (s.startsWith('"""', i) || s.startsWith("'''", i)) { q = s.substr(i, 3); i += 2; continue; }
+      if (c === '"' || c === "'") { q = c; continue; }
+      if (c === '#') return [s.slice(0, i).trimEnd(), s.slice(i + 1).trim()];
+    }
+    return [s, null];
+  }
+
+  // ищет ':' блока на верхнем уровне (не внутри скобок/строк/лямбд/срезов)
+  function findBlockColon(s) {
+    let q = null, d = 0;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (q) { if (c === '\\') { i++; continue; } if (c === q) q = null; continue; }
+      if (c === '"' || c === "'") { q = c; continue; }
+      if ('([{'.includes(c)) d++;
+      else if (')]}'.includes(c)) d--;
+      else if (c === ':' && d === 0) return i;
+    }
+    return -1;
+  }
+
+  const BLOCK_KW = /^(def|if|elif|else|while|for|class|try|except|finally|with)\b/;
+
+  function buildTreeShared(code) {
+    const lines = logicalLines(code);
+    const root = { body: [], indent: -1 };
+    const stack = [root];
+    const SEMI = /;(?=(?:[^"']*["'][^"']*["'])*[^"']*$)/;
+    for (const L of lines) {
+      const [codePart, comment] = splitComment(L.text);
+      const stripped = codePart.trim();
+      const indent = L.text.match(/^[ \t]*/)[0].replace(/\t/g, '    ').length;
+      if (!stripped) {
+        if (comment !== null) {
+          while (stack.length > 1 && indent <= stack[stack.length - 1].indent && stack[stack.length - 1].body.length) stack.pop();
+          stack[stack.length - 1].body.push({ kind: 'comment', text: comment, line: L.line });
+        } else {
+          const top = stack[stack.length - 1];
+          if (top.body.length && top.body[top.body.length - 1].kind !== 'blank') top.body.push({ kind: 'blank', line: L.line });
+        }
+        continue;
+      }
+      while (stack.length > 1 && indent <= stack[stack.length - 1].indent) stack.pop();
+      const parent = stack[stack.length - 1];
+      if (BLOCK_KW.test(stripped)) {
+        const ci = findBlockColon(stripped);
+        if (ci < 0) { parent.body.push({ kind: 'stmt', text: stripped, line: L.line, comment, error: 'в конце строки пропущено двоеточие «:»' }); continue; }
+        const node = { kind: 'block', head: stripped.slice(0, ci).trim(), body: [], line: L.line, indent, comment };
+        const rest = stripped.slice(ci + 1).trim();
+        parent.body.push(node);
+        if (rest) {
+          for (const part of rest.split(SEMI)) if (part.trim()) node.body.push({ kind: 'stmt', text: part.trim(), line: L.line });
+        } else stack.push(node);
+        continue;
+      }
+      const parts = stripped.split(SEMI).filter(p => p.trim());
+      parts.forEach((part, idx) => parent.body.push({ kind: 'stmt', text: part.trim(), line: L.line, comment: idx === parts.length - 1 ? comment : null }));
+    }
+    return root.body;
+  }
+
+  /* ---------- Типы ---------- */
+  const isNum = t => t === 'int' || t === 'double' || t === 'bool' || t === 'char';
+  const isVec = t => /^vector<.*>$/.test(t || '');
+  const elemOf = t => isVec(t) ? t.slice(7, -1) : (t === 'string' ? 'char' : 'auto');
+  function unify(a, b) {
+    if (!a || a === 'auto') return b || 'auto';
+    if (!b || b === 'auto' || a === b) return a;
+    if (isNum(a) && isNum(b)) return (a === 'double' || b === 'double') ? 'double' : 'int';
+    if ((a === 'string' && b === 'char') || (a === 'char' && b === 'string')) return 'string';
+    return a;
+  }
+  function annToType(a) {
+    if (!a) return null;
+    a = a.replace(/\s+/g, '');
+    const m = /^(?:list|List)\[(.+)\]$/.exec(a);
+    if (m) return 'vector<' + (annToType(m[1]) || 'int') + '>';
+    return { int: 'int', float: 'double', str: 'string', bool: 'bool', list: 'vector<int>', None: 'void' }[a] || null;
+  }
+
+  /* ---------- Кодирование строк C++ ---------- */
+  function cppStr(s) {
+    let o = '"';
+    for (const ch of s) {
+      const c = ch.codePointAt(0);
+      if (ch === '"') o += '\\"';
+      else if (ch === '\\') o += '\\\\';
+      else if (ch === '\n') o += '\\n';
+      else if (ch === '\t') o += '\\t';
+      else if (ch === '\r') o += '\\r';
+      else if (c < 32) o += '\\x' + c.toString(16).padStart(2, '0') + '""';
+      else o += ch;
+    }
+    return o + '"';
+  }
+  function cppChar(s) {
+    const m = { "'": "\\'", '\\': '\\\\', '\n': '\\n', '\t': '\\t', '\r': '\\r', '\0': '\\0' };
+    return "'" + (m[s] || s) + "'";
+  }
+
+  /* ---------- Генератор ---------- */
+  // приоритеты C++: чем больше, тем сильнее связывание
+  const P = { assign: 1, tern: 2, or: 3, and: 4, bor: 5, bxor: 6, band: 7, eq: 8, rel: 9, shift: 10, add: 11, mul: 12, un: 13, post: 14, atom: 15 };
+  const BIN_P = { '|': P.bor, '^': P.bxor, '&': P.band, '<<': P.shift, '>>': P.shift, '+': P.add, '-': P.add, '*': P.mul, '/': P.mul, '//': P.mul, '%': P.mul };
+  const MATH_FN = { sqrt: 'sqrt', floor: 'floor', ceil: 'ceil', sin: 'sin', cos: 'cos', tan: 'tan', log: 'log', log2: 'log2', log10: 'log10', exp: 'exp', fabs: 'fabs', pow: 'pow', atan: 'atan', atan2: 'atan2', asin: 'asin', acos: 'acos', hypot: 'hypot', trunc: 'trunc' };
+  const MATH_CONST = { pi: 'M_PI', e: 'M_E', inf: 'INFINITY' };
+
+  class Gen {
+    constructor(passInfo) {
+      this.warnings = [];
+      this.helpers = new Set();
+      this.includes = new Set(['iostream', 'string']);
+      this.fnSigs = passInfo.fnSigs;          // name → {params:[{name,type}], ret}
+      this.callTypes = passInfo.callTypes;    // name → [types по позициям]
+      this.newCallTypes = {};
+      this.newRet = {};
+      this.globals = passInfo.globals;        // name → type (глобальные переменные)
+      this.tmp = 0;
+    }
+    warn(line, msg) { const w = (line ? 'Строка ' + line + ': ' : '') + msg; if (!this.warnings.includes(w)) this.warnings.push(w); }
+    need(inc) { this.includes.add(inc); }
+
+    /* --- вывод типа выражения --- */
+    typeOf(e, env) {
+      switch (e.k) {
+        case 'num': return e.isFloat ? 'double' : 'int';
+        case 'str': return e.v.length === 1 && e.asChar ? 'char' : 'string';
+        case 'fstr': return 'string';
+        case 'bool': return 'bool';
+        case 'none': return 'auto';
+        case 'paren': return this.typeOf(e.x, env);
+        case 'name': return env.vars[e.v] || this.globals[e.v] || 'auto';
+        case 'list': {
+          let t = 'auto';
+          for (const it of e.items) t = unify(t, this.typeOf(it, env));
+          return 'vector<' + (t === 'auto' ? 'int' : t) + '>';
+        }
+        case 'index': return elemOf(this.typeOf(e.obj, env));
+        case 'slice': return this.typeOf(e.obj, env);
+        case 'un': return this.typeOf(e.x, env) === 'double' ? 'double' : 'int';
+        case 'not': case 'cmp': case 'logic': return e.k === 'logic' ? unify(this.typeOf(e.l, env), this.typeOf(e.r, env)) === 'bool' ? 'bool' : 'bool' : 'bool';
+        case 'ifexp': return unify(this.typeOf(e.a, env), this.typeOf(e.b, env));
+        case 'bin': {
+          const a = this.typeOf(e.l, env), b = this.typeOf(e.r, env);
+          if (e.op === '+' && (a === 'string' || b === 'string')) return 'string';
+          if (e.op === '+' && isVec(a)) return a;
+          if (e.op === '*' && (a === 'string' || b === 'string')) return 'string';
+          if (e.op === '*' && (isVec(a) || isVec(b))) return isVec(a) ? a : b;
+          if (e.op === '/') return 'double';
+          if (e.op === '**') return (a === 'double' || b === 'double') ? 'double' : (a === 'auto' || b === 'auto' ? 'double' : 'int');
+          if (a === 'double' || b === 'double') return 'double';
+          if (a === 'auto' && b === 'auto') return 'auto';
+          return 'int';
+        }
+        case 'tuple': return 'auto';
+        case 'call': return this.callType(e, env);
+        case 'attr': {
+          if (e.obj.k === 'name' && e.obj.v === 'math' && MATH_CONST[e.name]) return 'double';
+          return 'auto';
+        }
+      }
+      return 'auto';
+    }
+    callType(e, env) {
+      const f = e.fn;
+      if (f.k === 'name') {
+        const n = f.v;
+        if (this.fnSigs[n]) return this.fnSigs[n].ret === 'void' ? 'void' : this.fnSigs[n].ret;
+        const a0 = e.args[0] ? this.typeOf(e.args[0], env) : 'auto';
+        switch (n) {
+          case 'len': case 'int': case 'ord': return 'int';
+          case 'float': return 'double';
+          case 'str': case 'input': case 'chr': return n === 'chr' ? 'char' : 'string';
+          case 'bool': return 'bool';
+          case 'abs': return a0 === 'double' ? 'double' : 'int';
+          case 'round': return e.args.length > 1 ? 'double' : 'int';
+          case 'max': case 'min': {
+            if (e.args.length === 1) return elemOf(a0);
+            let t = 'auto'; for (const a of e.args) t = unify(t, this.typeOf(a, env)); return t;
+          }
+          case 'sum': return elemOf(a0) === 'double' ? 'double' : 'int';
+          case 'sorted': case 'list': {
+            if (e.args[0] && e.args[0].k === 'call' && e.args[0].fn.k === 'name' && e.args[0].fn.v === 'map') return this.mapType(e.args[0]);
+            if (e.args[0] && e.args[0].k === 'call' && e.args[0].fn.k === 'name' && e.args[0].fn.v === 'range') return 'vector<int>';
+            return a0 === 'string' ? 'vector<char>' : a0;
+          }
+          case 'pow': return 'double';
+          case 'map': return this.mapType(e);
+        }
+        return 'auto';
+      }
+      if (f.k === 'attr') {
+        const ot = this.typeOf(f.obj, env);
+        if (f.obj.k === 'name' && f.obj.v === 'math') return ['floor', 'ceil', 'trunc'].includes(f.name) ? 'int' : 'double';
+        if (ot === 'string') {
+          if (['upper', 'lower', 'strip', 'lstrip', 'rstrip', 'replace', 'join', 'capitalize'].includes(f.name)) return 'string';
+          if (['find', 'count', 'index'].includes(f.name)) return 'int';
+          if (['isdigit', 'isalpha', 'startswith', 'endswith', 'isupper', 'islower', 'isspace'].includes(f.name)) return 'bool';
+          if (f.name === 'split') return 'vector<string>';
+        }
+        if (ot === 'char' && ['isdigit', 'isalpha', 'isupper', 'islower', 'isspace'].includes(f.name)) return 'bool';
+        if (ot === 'char' && ['upper', 'lower'].includes(f.name)) return 'char';
+        if (f.obj.k === 'str' && f.name === 'join') return 'string';
+        if (isVec(ot)) {
+          if (f.name === 'pop') return elemOf(ot);
+          if (['index', 'count'].includes(f.name)) return 'int';
+        }
+      }
+      return 'auto';
+    }
+    mapType(m) {
+      const fn = m.args[0];
+      if (fn && fn.k === 'name') return 'vector<' + ({ int: 'int', float: 'double', str: 'string' }[fn.v] || 'int') + '>';
+      return 'vector<int>';
+    }
+
+    /* --- генерация выражения: возвращает {c, p} --- */
+    // можно ли доказать, что значение неотрицательно (тогда % и // совпадают с C++)
+    nonNeg(e, env) {
+      if (e.k === 'num') return true;
+      if (e.k === 'paren') return this.nonNeg(e.x, env);
+      if (e.k === 'name') return env.nonneg && env.nonneg.has(e.v);
+      if (e.k === 'call' && e.fn.k === 'name' && e.fn.v === 'len') return true;
+      if (e.k === 'bin' && ['+', '*', '//', '%'].includes(e.op)) return this.nonNeg(e.l, env) && this.nonNeg(e.r, env);
+      return false;
+    }
+    wrap(r, minP) { return r.p < minP ? '(' + r.c + ')' : r.c; }
+    ex(e, env, line) {
+      const self = this;
+      const E = (x, minP) => self.wrap(self.ex(x, env, line), minP);
+      switch (e.k) {
+        case 'num': {
+          let v = e.v;
+          if (/^0[oO]/.test(v)) v = '0' + v.slice(2);
+          return { c: v, p: P.atom };
+        }
+        case 'str': return { c: e.asChar ? cppChar(e.v) : cppStr(e.v), p: P.atom };
+        case 'fstr': return this.fstrConcat(e, env, line);
+        case 'bool': return { c: e.v ? 'true' : 'false', p: P.atom };
+        case 'none': this.warn(line, 'None заменён на 0'); return { c: '0', p: P.atom };
+        case 'paren': return this.ex(e.x, env, line);
+        case 'name': {
+          if (e.v === 'math') { this.warn(line, 'модуль math используется как значение'); }
+          else if (!(e.v in env.vars) && !(e.v in this.globals) && !env.declared.has(e.v) && !env.hoisted.has(e.v) && !this.fnSigs[e.v])
+            this.warn(line, 'переменная «' + e.v + '» не определена');
+          return { c: e.v, p: P.atom };
+        }
+        case 'list': {
+          const lt = this.typeOf(e, env);
+          if (!e.items.length) return { c: e.bare ? '{}' : lt + '{}', p: P.atom };
+          return { c: (e.bare ? '' : lt) + '{' + e.items.map(x => E(x, P.assign + 1)).join(', ') + '}', p: P.atom };
+        }
+        case 'tuple': {
+          this.warn(line, 'кортежи поддерживаются только в присваивании и for');
+          return { c: '{' + e.items.map(x => E(x, P.assign + 1)).join(', ') + '}', p: P.atom };
+        }
+        case 'index': {
+          const ot = this.typeOf(e.obj, env);
+          const obj = E(e.obj, P.post);
+          // отрицательный индекс a[-k] → a[a.size() - k]
+          if (e.idx.k === 'un' && e.idx.op === '-' && e.idx.x.k === 'num') {
+            if (e.idx.x.v === '1' && (isVec(ot) || ot === 'string')) return { c: obj + '.back()', p: P.post };
+            return { c: obj + '[' + obj + '.size() - ' + e.idx.x.v + ']', p: P.post };
+          }
+          return { c: obj + '[' + E(e.idx, P.assign) + ']', p: P.post };
+        }
+        case 'slice': {
+          this.helpers.add('slice');
+          const ot = this.typeOf(e.obj, env);
+          if (ot === 'auto') this.warn(line, 'срез объекта неизвестного типа');
+          const o = e.obj.k === 'str' ? 'string(' + E(e.obj, P.assign) + ')' : E(e.obj, P.assign + 1);
+          const part = x => x ? E(x, P.assign + 1) : 'PY_NONE';
+          const args = [o, part(e.a), part(e.b)];
+          if (e.c) args.push(E(e.c, P.assign + 1));
+          return { c: 'py_slice(' + args.join(', ') + ')', p: P.post };
+        }
+        case 'un': return { c: e.op + E(e.x, P.un), p: P.un };
+        case 'not': {
+          const t = this.typeOf(e.x, env);
+          if (t === 'string' || isVec(t)) return { c: E(e.x, P.post) + '.empty()', p: P.post };
+          return { c: '!' + E(e.x, P.un), p: P.un };
+        }
+        case 'logic': {
+          const op = e.op === 'and' ? '&&' : '||';
+          const pp = e.op === 'and' ? P.and : P.or;
+          return { c: this.wrap(this.truthy(e.l, env, line), pp) + ' ' + op + ' ' + this.wrap(this.truthy(e.r, env, line), pp + 1), p: pp };
+        }
+        case 'ifexp': return { c: this.wrap(this.truthy(e.c, env, line), P.tern + 1) + ' ? ' + E(e.a, P.tern + 1) + ' : ' + E(e.b, P.tern), p: P.tern };
+        case 'cmp': {
+          const parts = [];
+          for (let i = 0; i < e.ops.length; i++) parts.push(this.cmpOne(e.ops[i], e.items[i], e.items[i + 1], env, line));
+          if (parts.length === 1) return parts[0];
+          return { c: parts.map(r => this.wrap(r, P.and + 1)).join(' && '), p: P.and };
+        }
+        case 'bin': return this.binary(e, env, line);
+        case 'call': return this.call(e, env, line);
+        case 'attr': {
+          if (e.obj.k === 'name' && e.obj.v === 'math') {
+            if (MATH_CONST[e.name]) { this.need('cmath'); return { c: MATH_CONST[e.name], p: P.atom }; }
+            if (MATH_FN[e.name]) { this.need('cmath'); return { c: MATH_FN[e.name], p: P.atom }; }
+          }
+          this.warn(line, 'атрибут «.' + e.name + '» перенесён как есть');
+          return { c: E(e.obj, P.post) + '.' + e.name, p: P.post };
+        }
+      }
+      throw new Error('неподдерживаемое выражение');
+    }
+
+    // строковый литерал из одного символа рядом с char → символьный литерал
+    charify(a, b, env) {
+      if (a.k === 'str' && a.v.length === 1 && this.typeOf(b, env) === 'char') a = { ...a, asChar: true };
+      return a;
+    }
+    cmpOne(op, l, r, env, line) {
+      l = this.charify(l, r, env); r = this.charify(r, l, env);
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      if (op === 'in' || op === 'not in') {
+        const rt = this.typeOf(r, env);
+        const neg = op === 'not in';
+        if (rt === 'string' || r.k === 'str') {
+          const lhs = l.k === 'str' && l.v.length === 1 ? { ...l, asChar: true } : l;
+          return { c: E(r, P.post) + '.find(' + E(lhs, P.assign) + ') ' + (neg ? '==' : '!=') + ' string::npos', p: P.eq };
+        }
+        this.need('algorithm');
+        let coll = E(r, P.post);
+        if (r.k === 'list' || r.k === 'tuple') {
+          const t = this.typeOf({ k: 'list', items: r.items }, env);
+          coll = t + '{' + r.items.map(x => E(x, P.assign + 1)).join(', ') + '}';
+          const v = '_v' + (++this.tmp);
+          // встроенный литерал: используем лямбду, чтобы не дублировать
+          return { c: '[&]{ ' + t + ' ' + v + coll.slice(t.length) + '; return find(' + v + '.begin(), ' + v + '.end(), ' + E(l, P.assign) + ') ' + (neg ? '==' : '!=') + ' ' + v + '.end(); }()', p: P.post };
+        }
+        return { c: 'find(' + coll + '.begin(), ' + coll + '.end(), ' + E(l, P.assign) + ') ' + (neg ? '==' : '!=') + ' ' + coll + '.end()', p: P.eq };
+      }
+      const pp = (op === '==' || op === '!=') ? P.eq : P.rel;
+      // x % k == 0 даёт одинаковый результат в C++ и Python — можно обычный %
+      if ((op === '==' || op === '!=') && r.k === 'num' && r.v === '0' && l.k === 'bin' && l.op === '%') l = { ...l, plain: true };
+      if ((op === '==' || op === '!=') && l.k === 'num' && l.v === '0' && r.k === 'bin' && r.op === '%') r = { ...r, plain: true };
+      // сравнение двух строковых литералов
+      let lc = E(l, pp), rc = E(r, pp + 1);
+      if (l.k === 'str' && !l.asChar && (r.k === 'str' && !r.asChar)) lc = 'string(' + lc + ')';
+      return { c: lc + ' ' + op + ' ' + rc, p: pp };
+    }
+    binary(e, env, line) {
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      const lt = this.typeOf(e.l, env), rt = this.typeOf(e.r, env);
+      const op = e.op;
+      if (op === '**') {
+        this.need('cmath');
+        const c = 'pow(' + E(e.l, P.assign) + ', ' + E(e.r, P.assign) + ')';
+        if (lt !== 'double' && rt !== 'double' && lt !== 'auto' && rt !== 'auto') return { c: '(long long)' + c, p: P.un };
+        return { c, p: P.post };
+      }
+      if (op === '/') {
+        // в Python "/" всегда даёт дробное число
+        if (lt !== 'double' && rt !== 'double') return { c: '(double)' + E(e.l, P.un) + ' / ' + E(e.r, P.mul + 1), p: P.mul };
+        return { c: E(e.l, P.mul) + ' / ' + E(e.r, P.mul + 1), p: P.mul };
+      }
+      const nonneg = this.nonNeg(e.l, env) && this.nonNeg(e.r, env);
+      if (op === '//') {
+        if (lt === 'double' || rt === 'double') { this.need('cmath'); return { c: 'floor(' + E(e.l, P.assign) + ' / ' + E(e.r, P.mul + 1) + ')', p: P.post }; }
+        if (nonneg) return { c: E(e.l, P.mul) + ' / ' + E(e.r, P.mul + 1), p: P.mul };
+        this.helpers.add('floordiv');
+        return { c: 'py_floordiv(' + E(e.l, P.assign) + ', ' + E(e.r, P.assign) + ')', p: P.post };
+      }
+      if (op === '%') {
+        if (lt === 'double' || rt === 'double') { this.need('cmath'); return { c: 'fmod(' + E(e.l, P.assign) + ', ' + E(e.r, P.assign) + ')', p: P.post }; }
+        if (nonneg || e.plain) return { c: E(e.l, P.mul) + ' % ' + E(e.r, P.mul + 1), p: P.mul };
+        this.helpers.add('mod');
+        return { c: 'py_mod(' + E(e.l, P.assign) + ', ' + E(e.r, P.assign) + ')', p: P.post };
+      }
+      if (op === '*' && (lt === 'string' || rt === 'string')) {
+        this.helpers.add('strmul');
+        const [s, n] = lt === 'string' ? [e.l, e.r] : [e.r, e.l];
+        return { c: 'py_repeat(' + E(s, P.assign) + ', ' + E(n, P.assign) + ')', p: P.post };
+      }
+      if (op === '*' && (isVec(lt) || isVec(rt))) {
+        const [v, n] = isVec(lt) ? [e.l, e.r] : [e.r, e.l];
+        const vt = isVec(lt) ? lt : rt;
+        if (v.k === 'list' && v.items.length === 1) return { c: vt + '(' + E(n, P.assign) + ', ' + E(v.items[0], P.assign) + ')', p: P.post };
+        this.warn(line, 'умножение списка поддерживается только для [x] * n');
+      }
+      if (op === '+' && (lt === 'string' || rt === 'string')) {
+        // "a" + "b" — оба литерала: оборачиваем левый в string(...)
+        let l = this.charify(e.l, e.r, env), r = e.r;
+        let lc = E(l, P.add), rc = E(r, P.add + 1);
+        if (isNum(lt) && lt !== 'char') { this.helpers.add('str'); lc = 'py_str(' + lc + ')'; this.warn(line, 'число + строка: в Python это ошибка, добавлено преобразование'); }
+        if (isNum(rt) && rt !== 'char') { this.helpers.add('str'); rc = 'py_str(' + rc + ')'; this.warn(line, 'строка + число: в Python это ошибка, добавлено преобразование'); }
+        if ((e.l.k === 'str' || e.l.k === 'fstr' && false) && (e.r.k === 'str' || lt !== 'string')) lc = 'string(' + lc + ')';
+        else if (e.l.k === 'str' && e.r.k === 'str') lc = 'string(' + lc + ')';
+        return { c: lc + ' + ' + rc, p: P.add };
+      }
+      if (op === '+' && isVec(lt)) {
+        this.helpers.add('vecadd');
+        return { c: 'py_concat(' + E(e.l, P.assign) + ', ' + E(e.r, P.assign) + ')', p: P.post };
+      }
+      const pp = BIN_P[op];
+      return { c: E(e.l, pp) + ' ' + op + ' ' + E(e.r, pp + 1), p: pp };
+    }
+
+    fstrConcat(e, env, line) {
+      // f-строка вне print → конкатенация строк
+      this.helpers.add('str');
+      const pieces = e.parts.map(p => typeof p === 'string' ? cppStr(p) : this.fmtPiece(p, env, line, true));
+      if (!pieces.length) return { c: 'string("")', p: P.post };
+      if (typeof e.parts[0] === 'string') pieces[0] = 'string(' + pieces[0] + ')';
+      return { c: pieces.join(' + '), p: pieces.length > 1 ? P.add : P.post };
+    }
+    fmtPiece(p, env, line, asString) {
+      const t = this.typeOf(p.expr, env);
+      const code = this.wrap(this.ex(p.expr, env, line), asString ? P.assign : P.shift + 1);
+      if (p.fmt) {
+        const m = /^([<>^]?)(\d*)(?:\.(\d+))?([fdsx%]?)$/.exec(p.fmt);
+        if (m && m[3] !== undefined && (m[4] === 'f' || m[4] === '')) {
+          this.helpers.add('fmt');
+          return 'py_fixed(' + code + ', ' + m[3] + ')';
+        }
+        this.warn(line, 'формат «:' + p.fmt + '» в f-строке не поддерживается и пропущен');
+      }
+      if (asString) {
+        if (t === 'string') return code;
+        return 'py_str(' + code + ')';
+      }
+      if (t === 'bool') return '(' + code + ' ? "True" : "False")';
+      if (t === 'double') { this.helpers.add('str'); return 'py_str(' + code + ')'; }
+      if (isVec(t)) { this.helpers.add('printvec'); this.helpers.add('str'); }
+      return code;
+    }
+
+    call(e, env, line) {
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      const A = () => e.args.map(a => E(a, P.assign + 1)).join(', ');
+      const f = e.fn;
+      if (f.k === 'name') {
+        const n = f.v;
+        const a0 = e.args[0];
+        const t0 = a0 ? this.typeOf(a0, env) : 'auto';
+        if (this.fnSigs[n]) {
+          // запоминаем типы аргументов на месте вызова
+          const types = e.args.map(a => this.typeOf(a, env));
+          const prev = this.newCallTypes[n] || [];
+          types.forEach((t, i) => { if (prev[i] && prev[i] !== 'auto' && t !== 'auto' && prev[i] !== t) this.warn(line, 'функция ' + n + '() вызывается с аргументами разных типов (' + prev[i] + ' и ' + t + ') — выбран общий тип'); });
+          this.newCallTypes[n] = types.map((t, i) => unify(prev[i], t));
+          return { c: this.fnSigs[n].cname + '(' + A() + ')', p: P.post };
+        }
+        switch (n) {
+          case 'print': throw new Error('print() можно использовать только как отдельную инструкцию');
+          case 'len': return { c: '(int)' + E(a0, P.post) + '.size()', p: P.un };
+          case 'input': this.helpers.add('input'); return { c: 'py_input(' + (a0 ? E(a0, P.assign + 1) : '') + ')', p: P.post };
+          case 'int':
+            if (!a0) return { c: '0', p: P.atom };
+            if (t0 === 'string') return { c: 'stoi(' + E(a0, P.assign + 1) + (e.args[1] ? ', nullptr, ' + E(e.args[1], P.assign + 1) : '') + ')', p: P.post };
+            if (t0 === 'char') return { c: '(' + E(a0, P.add) + " - '0')", p: P.atom };
+            if (t0 === 'auto') { this.helpers.add('toint'); return { c: 'py_int(' + E(a0, P.assign + 1) + ')', p: P.post }; }
+            return { c: '(int)' + E(a0, P.un), p: P.un };
+          case 'float':
+            if (!a0) return { c: '0.0', p: P.atom };
+            if (t0 === 'string') return { c: 'stod(' + E(a0, P.assign + 1) + ')', p: P.post };
+            return { c: '(double)' + E(a0, P.un), p: P.un };
+          case 'str':
+            if (!a0) return { c: 'string()', p: P.post };
+            if (t0 === 'string') return this.ex(a0, env, line);
+            if (t0 === 'char') return { c: 'string(1, ' + E(a0, P.assign + 1) + ')', p: P.post };
+            this.helpers.add('str'); return { c: 'py_str(' + E(a0, P.assign + 1) + ')', p: P.post };
+          case 'bool': return { c: '(bool)' + E(a0, P.un), p: P.un };
+          case 'abs': this.need('cmath'); return { c: 'abs(' + A() + ')', p: P.post };
+          case 'round':
+            this.need('cmath');
+            if (e.args.length > 1) { this.warn(line, 'round(x, n) округляет по-другому, чем Python'); return { c: 'round(' + E(a0, P.assign) + ' * pow(10, ' + E(e.args[1], P.assign) + ')) / pow(10, ' + E(e.args[1], P.assign) + ')', p: P.mul }; }
+            return { c: '(int)nearbyint(' + E(a0, P.assign) + ')', p: P.un };
+          case 'ord': return { c: '(int)' + E(a0.k === 'str' ? { ...a0, asChar: true } : a0, P.un), p: P.un };
+          case 'chr': return { c: '(char)' + E(a0, P.un), p: P.un };
+          case 'pow': this.need('cmath'); return { c: 'pow(' + A() + ')', p: P.post };
+          case 'max': case 'min': {
+            this.need('algorithm');
+            if (e.args.length === 1) return { c: '*' + n + '_element(' + E(a0, P.post) + '.begin(), ' + E(a0, P.post) + '.end())', p: P.un };
+            const types = e.args.map(a => this.typeOf(a, env));
+            let t = 'auto'; for (const x of types) t = unify(t, x);
+            const args = e.args.map((a, i) => (t === 'double' && types[i] !== 'double') ? '(double)' + E(a, P.un) : E(a, P.assign + 1));
+            if (args.length === 2) return { c: n + '(' + args.join(', ') + ')', p: P.post };
+            return { c: n + '({' + args.join(', ') + '})', p: P.post };
+          }
+          case 'sum': {
+            this.need('numeric');
+            const zero = elemOf(t0) === 'double' ? '0.0' : '0';
+            return { c: 'accumulate(' + E(a0, P.post) + '.begin(), ' + E(a0, P.post) + '.end(), ' + zero + ')', p: P.post };
+          }
+          case 'sorted': {
+            this.helpers.add('sorted'); this.need('algorithm');
+            const rev = e.kwargs.reverse ? ', ' + E(e.kwargs.reverse, P.assign + 1) : '';
+            return { c: 'py_sorted(' + E(a0, P.assign + 1) + rev + ')', p: P.post };
+          }
+          case 'list': {
+            if (a0 && a0.k === 'call' && a0.fn.k === 'name' && a0.fn.v === 'map') return this.ex(a0, env, line);
+            if (a0 && a0.k === 'call' && a0.fn.k === 'name' && a0.fn.v === 'range') {
+              this.helpers.add('range');
+              return { c: 'py_range(' + a0.args.map(a => E(a, P.assign + 1)).join(', ') + ')', p: P.post };
+            }
+            if (t0 === 'string') return { c: 'vector<char>(' + E(a0, P.post) + '.begin(), ' + E(a0, P.post) + '.end())', p: P.post };
+            return this.ex(a0, env, line);
+          }
+          case 'map': {
+            // map(int, input().split()) → py_map_int(py_split(...))
+            const fn = a0 && a0.k === 'name' ? a0.v : null;
+            const src = e.args[1];
+            if (fn && src) {
+              this.helpers.add('split');
+              const st = this.typeOf(src, env);
+              const s = E(src, P.assign + 1);
+              if (st !== 'vector<string>') this.warn(line, 'map() поддерживается для списка строк');
+              if (fn === 'int') { this.helpers.add('mapint'); return { c: 'py_map_int(' + s + ')', p: P.post }; }
+              if (fn === 'float') { this.helpers.add('mapfloat'); return { c: 'py_map_float(' + s + ')', p: P.post }; }
+              if (fn === 'str') return { c: s, p: P.post };
+            }
+            throw new Error('map() поддерживается только как map(int, ...)');
+          }
+          case 'range': throw new Error('range() поддерживается только в for или list(range(...))');
+          case 'enumerate': case 'zip': throw new Error(n + '() поддерживается только в цикле for');
+          case 'isinstance': case 'type': case 'open': case 'dict': case 'set': case 'tuple':
+            throw new Error(n + '() не поддерживается');
+        }
+        this.warn(line, 'неизвестная функция «' + n + '» перенесена как есть');
+        return { c: n + '(' + A() + ')', p: P.post };
+      }
+      if (f.k === 'attr') {
+        const obj = f.obj;
+        if (obj.k === 'name' && obj.v === 'math') {
+          this.need('cmath');
+          if (MATH_FN[f.name]) {
+            const c = MATH_FN[f.name] + '(' + A() + ')';
+            if (['floor', 'ceil', 'trunc'].includes(f.name)) return { c: '(int)' + c, p: P.un };
+            return { c, p: P.post };
+          }
+          if (f.name === 'gcd') { this.need('numeric'); return { c: 'gcd(' + A() + ')', p: P.post }; }
+          if (f.name === 'factorial') { this.helpers.add('factorial'); return { c: 'py_factorial(' + A() + ')', p: P.post }; }
+          if (f.name === 'isqrt') return { c: '(int)sqrt(' + A() + ')', p: P.un };
+          throw new Error('math.' + f.name + ' не поддерживается');
+        }
+        const ot = this.typeOf(obj, env);
+        const o = E(obj, P.post);
+        const m = f.name;
+        if (isVec(ot) || (ot === 'auto' && ['append', 'pop', 'insert', 'extend', 'sort', 'reverse', 'clear'].includes(m))) {
+          if (ot === 'auto') this.warn(line, 'тип «' + o + '» неизвестен, считаю его списком');
+          switch (m) {
+            case 'append': return { c: o + '.push_back(' + A() + ')', p: P.post };
+            case 'pop':
+              if (!e.args.length) { this.helpers.add('pop'); return { c: 'py_pop(' + o + ')', p: P.post }; }
+              this.helpers.add('popi'); return { c: 'py_pop(' + o + ', ' + A() + ')', p: P.post };
+            case 'insert': return { c: o + '.insert(' + o + '.begin() + ' + E(e.args[0], P.add + 1) + ', ' + E(e.args[1], P.assign + 1) + ')', p: P.post };
+            case 'extend': return { c: o + '.insert(' + o + '.end(), ' + E(e.args[0], P.post) + '.begin(), ' + E(e.args[0], P.post) + '.end())', p: P.post };
+            case 'sort':
+              this.need('algorithm');
+              if (e.kwargs.reverse) return { c: 'sort(' + o + '.rbegin(), ' + o + '.rend())', p: P.post };
+              return { c: 'sort(' + o + '.begin(), ' + o + '.end())', p: P.post };
+            case 'reverse': this.need('algorithm'); return { c: 'reverse(' + o + '.begin(), ' + o + '.end())', p: P.post };
+            case 'clear': return { c: o + '.clear()', p: P.post };
+            case 'index': this.need('algorithm'); return { c: '(int)(find(' + o + '.begin(), ' + o + '.end(), ' + A() + ') - ' + o + '.begin())', p: P.un };
+            case 'count': this.need('algorithm'); return { c: '(int)count(' + o + '.begin(), ' + o + '.end(), ' + A() + ')', p: P.un };
+            case 'remove': this.need('algorithm'); return { c: o + '.erase(find(' + o + '.begin(), ' + o + '.end(), ' + A() + '))', p: P.post };
+          }
+        }
+        if (ot === 'string' || ot === 'char' || obj.k === 'str') {
+          const arg0 = e.args[0];
+          switch (m) {
+            case 'upper': case 'lower':
+              if (ot === 'char') { this.need('cctype'); return { c: '(char)to' + m + '(' + o + ')', p: P.un }; }
+              this.helpers.add(m); return { c: 'py_' + m + '(' + o + ')', p: P.post };
+            case 'strip': case 'lstrip': case 'rstrip': this.helpers.add('strip'); return { c: 'py_' + m + '(' + o + ')', p: P.post };
+            case 'split':
+              this.helpers.add('split');
+              return { c: 'py_split(' + o + (arg0 ? ', ' + E(arg0, P.assign + 1) : '') + ')', p: P.post };
+            case 'join': this.helpers.add('join'); return { c: 'py_join(' + o + ', ' + E(arg0, P.assign + 1) + ')', p: P.post };
+            case 'replace': this.helpers.add('replace'); return { c: 'py_replace(' + o + ', ' + A() + ')', p: P.post };
+            case 'find': return { c: '(int)' + o + '.find(' + A() + ')', p: P.un };
+            case 'startswith': return { c: o + '.rfind(' + A() + ', 0) == 0', p: P.eq };
+            case 'endswith': this.helpers.add('endswith'); return { c: 'py_endswith(' + o + ', ' + A() + ')', p: P.post };
+            case 'count': this.helpers.add('strcount'); return { c: 'py_count(' + o + ', ' + A() + ')', p: P.post };
+            case 'isdigit': case 'isalpha': case 'isupper': case 'islower': case 'isspace':
+              if (ot === 'char') { this.need('cctype'); return { c: '(bool)' + m + '((unsigned char)' + o + ')', p: P.un }; }
+              this.helpers.add('strpred'); return { c: 'py_all(' + o + ', ' + m + ')', p: P.post };
+          }
+        }
+        this.warn(line, 'метод «.' + m + '()» перенесён как есть');
+        return { c: o + '.' + m + '(' + A() + ')', p: P.post };
+      }
+      this.warn(line, 'сложный вызов перенесён как есть');
+      return { c: E(f, P.post) + '(' + A() + ')', p: P.post };
+    }
+
+    /* --- инструкции --- */
+    // env: {vars: {name: type}, declared: Set, fn: {name, ret}|null, hoist: Map}
+    block(nodes, env, ind) {
+      const out = [];
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (n.kind === 'blank') { if (out.length && out[out.length - 1] !== '') out.push(''); continue; }
+        if (n.kind === 'comment') { out.push(ind + '// ' + n.text); continue; }
+        try {
+          if (n.kind === 'block') {
+            const head = n.head;
+            if (/^if\b/.test(head)) {
+              // собираем цепочку if/elif/else
+              let chain = [n];
+              while (i + 1 < nodes.length) {
+                let j = i + 1;
+                while (j < nodes.length && (nodes[j].kind === 'blank' || nodes[j].kind === 'comment')) j++;
+                if (j < nodes.length && nodes[j].kind === 'block' && /^(elif\b|else$)/.test(nodes[j].head)) { chain.push(nodes[j]); i = j; } else break;
+              }
+              out.push(...this.ifChain(chain, env, ind));
+              continue;
+            }
+            if (/^(elif\b|else$)/.test(head)) throw new Error('«' + head.split(' ')[0] + '» без if');
+            if (/^while\b/.test(head)) {
+              const cond = this.cond(parseExpr(head.slice(5)), env, n.line);
+              out.push(ind + 'while (' + cond + ') {' + this.tail(n));
+              out.push(...this.body(n.body, env, ind + '    '));
+              out.push(ind + '}');
+              continue;
+            }
+            if (/^for\b/.test(head)) { out.push(...this.forLoop(n, env, ind)); continue; }
+            if (/^def\b/.test(head)) throw new Error('вложенные функции не поддерживаются');
+            const kw = head.split(/\s/)[0];
+            throw new Error('конструкция «' + kw + '» не поддерживается');
+          }
+          out.push(...this.stmt(n, env, ind));
+        } catch (err) {
+          this.warn(n.line, err.message);
+          const src = n.kind === 'block' ? n.head + ':' : n.text;
+          out.push(ind + '// TODO (не сконвертировано): ' + src.split('\n').join(' '));
+          if (n.kind === 'block') out.push(...this.commentOut(n.body, ind));
+        }
+      }
+      return out;
+    }
+    commentOut(nodes, ind, depth = 1) {
+      const out = [];
+      const pad = ind + '// ' + '    '.repeat(depth);
+      for (const n of nodes) {
+        if (n.kind === 'blank') continue;
+        if (n.kind === 'comment') { out.push(pad + '# ' + n.text); continue; }
+        out.push(pad + (n.kind === 'block' ? n.head + ':' : n.text));
+        if (n.kind === 'block') out.push(...this.commentOut(n.body, ind, depth + 1));
+      }
+      return out;
+    }
+    body(nodes, env, ind) {
+      const b = this.block(nodes, env, ind);
+      while (b.length && b[b.length - 1] === '') b.pop();
+      return b;
+    }
+    tail(n) { return n.comment ? ' // ' + n.comment : ''; }
+    cond(e, env, line) { return this.truthy(e, env, line).c; }
+    // значение в логическом контексте: пустые строки/списки — ложь
+    truthy(e, env, line) {
+      const t = this.typeOf(e, env);
+      if (t === 'string' || isVec(t)) return { c: '!' + this.wrap(this.ex(e, env, line), P.post) + '.empty()', p: P.un };
+      return this.ex(e, env, line);
+    }
+    ifChain(chain, env, ind) {
+      const out = [];
+      chain.forEach((n, idx) => {
+        let line;
+        if (idx === 0) line = ind + 'if (' + this.cond(parseExpr(n.head.slice(2)), env, n.line) + ') {';
+        else if (n.head === 'else') line = ind + '} else {';
+        else line = ind + '} else if (' + this.cond(parseExpr(n.head.slice(4)), env, n.line) + ') {';
+        out.push(line + this.tail(n));
+        out.push(...this.body(n.body, env, ind + '    '));
+      });
+      out.push(ind + '}');
+      return out;
+    }
+    loopVar(name, type, env) {
+      // если переменная уже объявлена — используем её
+      if (env.declared.has(name) || this.isGlobal(name, env)) return name;
+      env.vars[name] = type;
+      env.loopVars.add(name);
+      return type + ' ' + name;
+    }
+    forLoop(n, env, ind) {
+      const m = /^for\s+(.+?)\s+in\s+(.+)$/s.exec(n.head);
+      if (!m) throw new Error('не удалось разобрать for');
+      const target = m[1].trim();
+      const it = parseExpr(m[2]);
+      const out = [];
+      const saved = { ...env.vars };
+      const wasDeclared = new Set(env.declared);
+      if (it.k === 'call' && it.fn.k === 'name' && it.fn.v === 'range') {
+        if (!/^\w+$/.test(target)) throw new Error('в range() ожидается одна переменная');
+        const a = it.args.map(x => this.ex(x, env, n.line));
+        let start = '0', end, step = null;
+        if (a.length === 1) end = a[0];
+        else if (a.length === 2) { start = a[0].c; end = a[1]; }
+        else { start = a[0].c; end = a[1]; step = it.args[2]; }
+        const v = this.loopVar(target, 'int', env);
+        const name = target;
+        if (!env.nonneg) env.nonneg = new Set();
+        const stepOk = !it.args[2] || it.args[2].k === 'num';
+        const startOk = it.args.length === 1 || this.nonNeg(it.args[0], env);
+        if (stepOk && startOk && !assignsTo(n.body, target)) env.nonneg.add(target); else env.nonneg.delete(target);
+        let cmp = '<', inc = '++' + name;
+        if (step) {
+          const neg = step.k === 'un' && step.op === '-';
+          const sc = this.ex(step, env, n.line).c;
+          if (neg) { cmp = '>'; inc = name + ' -= ' + this.ex(step.x, env, n.line).c; }
+          else if (step.k === 'num') inc = name + ' += ' + sc;
+          else { this.warn(n.line, 'шаг range() не литерал — считаю его положительным'); inc = name + ' += ' + sc; }
+        }
+        out.push(ind + 'for (' + v + ' = ' + start + '; ' + name + ' ' + cmp + ' ' + this.wrap(end, P.rel + 1) + '; ' + inc + ') {' + this.tail(n));
+      } else if (it.k === 'call' && it.fn.k === 'name' && it.fn.v === 'enumerate') {
+        const tm = /^\(?\s*(\w+)\s*,\s*(\w+)\s*\)?$/.exec(target);
+        if (!tm) throw new Error('enumerate: ожидается «for i, x in enumerate(...)»');
+        const coll = this.ex(it.args[0], env, n.line);
+        const ct = this.typeOf(it.args[0], env);
+        const startV = it.args[1] ? this.ex(it.args[1], env, n.line).c : null;
+        const iv = '_i' + (++this.tmp);
+        const c = this.wrap(coll, P.post);
+        out.push(ind + 'for (int ' + iv + ' = 0; ' + iv + ' < (int)' + c + '.size(); ++' + iv + ') {' + this.tail(n));
+        const idx = this.loopVar(tm[1], 'int', env);
+        out.push(ind + '    ' + idx + ' = ' + iv + (startV ? ' + ' + startV : '') + ';');
+        const el = this.loopVar(tm[2], elemOf(ct) === 'auto' ? 'auto' : elemOf(ct), env);
+        out.push(ind + '    ' + el + ' = ' + c + '[' + iv + '];');
+      } else {
+        if (!/^\w+$/.test(target)) throw new Error('распаковка в for поддерживается только для enumerate()');
+        const ct = this.typeOf(it, env);
+        let et = elemOf(ct);
+        if (it.k === 'str') et = 'char';
+        const coll = this.ex(it, env, n.line).c;
+        if (env.declared.has(target)) {
+          const tv = '_x' + (++this.tmp);
+          out.push(ind + 'for (auto ' + tv + ' : ' + coll + ') {' + this.tail(n));
+          out.push(ind + '    ' + target + ' = ' + tv + ';');
+        } else {
+          env.vars[target] = et;
+          env.loopVars.add(target);
+          out.push(ind + 'for (' + (et === 'auto' || et === 'string' ? 'auto' : et) + (et === 'string' ? '&' : '') + ' ' + target + ' : ' + (it.k === 'list' ? (ct + coll) : it.k === 'str' ? 'string(' + coll + ')' : coll) + ') {' + this.tail(n));
+        }
+      }
+      out.push(...this.body(n.body, env, ind + '    '));
+      out.push(ind + '}');
+      // переменные цикла видны только внутри цикла C++
+      for (const k of Object.keys(env.vars)) if (!(k in saved) && !env.declared.has(k)) delete env.vars[k];
+      if (env.nonneg) env.nonneg.delete(target);
+      for (const k of [...env.loopVars]) if (!(k in saved)) { delete env.vars[k]; env.loopVars.delete(k); }
+      return out;
+    }
+    isGlobal(name, env) { return env.fn && env.fn.globals.has(name) || (!env.fn && name in this.globals); }
+
+    // объявление или присваивание
+    assignTo(name, valueCode, t, env, ind, line) {
+      if (env.declared.has(name) || this.isGlobal(name, env) || env.loopVars.has(name)) {
+        const old = env.vars[name] || this.globals[name];
+        if (old && old !== 'auto' && t !== 'auto' && old !== t && unify(old, t) !== old) this.warn(line, 'переменная «' + name + '» меняет тип (' + old + ' → ' + t + ')');
+        return ind + name + ' = ' + valueCode + ';';
+      }
+      if (env.hoisted.has(name)) {
+        env.declared.add(name);
+        env.vars[name] = unify(env.hoisted.get(name).type, t);
+        env.hoisted.get(name).type = env.vars[name];
+        return ind + name + ' = ' + valueCode + ';';
+      }
+      env.declared.add(name);
+      env.vars[name] = t;
+      if (t === 'void') throw new Error('функция ничего не возвращает');
+      if (valueCode === '{}' && isVec(t)) return ind + t + ' ' + name + ';';
+      return ind + (t === 'auto' ? 'auto' : t) + ' ' + name + ' = ' + valueCode + ';';
+    }
+
+    stmt(n, env, ind) {
+      const s = n.text;
+      if (n.error) throw new Error(n.error);
+      const tail = n.comment ? ' // ' + n.comment : '';
+      const L = n.line;
+      const one = x => [x + tail];
+      if (s === 'pass') return n.comment ? [ind + '// ' + n.comment] : [];
+      if (s === 'break' || s === 'continue') return one(ind + s + ';');
+      if (/^(import|from)\b/.test(s)) {
+        if (/\bmath\b/.test(s)) { this.need('cmath'); return []; }
+        this.warn(L, 'импорт «' + s + '» пропущен');
+        return [ind + '// ' + s];
+      }
+      if (/^global\b/.test(s) || /^nonlocal\b/.test(s)) return [];
+      if (/^(class|try|with|raise|assert|del|yield|async|lambda)\b/.test(s)) throw new Error('«' + s.split(/\s/)[0] + '» не поддерживается');
+      if (/^return\b/.test(s)) {
+        const rest = s.slice(6).trim();
+        if (!env.fn) throw new Error('return вне функции');
+        if (!rest) return one(ind + (env.fn.isMain ? 'return 0;' : 'return;'));
+        const e = parseExpr(rest);
+        if (e.k === 'tuple') throw new Error('возврат нескольких значений не поддерживается');
+        const t = this.typeOf(e, env);
+        env.fn.retTypes.push(t);
+        return one(ind + 'return ' + this.ex(e, env, L).c + ';');
+      }
+      if (/^print\s*\(/.test(s)) {
+        const e = parseExpr(s);
+        if (e.k === 'call' && e.fn.k === 'name' && e.fn.v === 'print') return one(ind + this.print(e, env, L));
+      }
+
+      // присваивание: ищем '=' / '+=' на верхнем уровне
+      const toks = tokenize(s);
+      let d = 0, eqIdx = -1, augOp = null, annIdx = -1;
+      for (let i = 0; i < toks.length; i++) {
+        const t = toks[i];
+        if (t.t !== 'op') continue;
+        if ('([{'.includes(t.v)) d++;
+        else if (')]}'.includes(t.v)) d--;
+        else if (d === 0 && t.v === '=' && eqIdx < 0) { eqIdx = i; }
+        else if (d === 0 && /^(\+|-|\*|\/|\/\/|%|\*\*|&|\||\^|<<|>>)=$/.test(t.v) && eqIdx < 0) { eqIdx = i; augOp = t.v.slice(0, -1); }
+        else if (d === 0 && t.v === ':' && eqIdx < 0 && annIdx < 0) annIdx = i;
+      }
+      if (eqIdx >= 0 || annIdx >= 0) {
+        const srcOf = (from, to) => toksToSrc(toks.slice(from, to));
+        let targetSrc, ann = null;
+        if (annIdx >= 0 && (eqIdx < 0 || annIdx < eqIdx)) { targetSrc = srcOf(0, annIdx); ann = srcOf(annIdx + 1, eqIdx < 0 ? toks.length - 1 : eqIdx); }
+        else targetSrc = srcOf(0, eqIdx);
+        if (eqIdx < 0) {
+          // x: int  (без значения)
+          const t = annToType(ann) || 'int';
+          const name = targetSrc.trim();
+          env.declared.add(name); env.vars[name] = t;
+          return one(ind + t + ' ' + name + '{};');
+        }
+        // цепочка a = b = 0
+        const rhsToks = toks.slice(eqIdx + 1);
+        const chainEq = (() => { let dd = 0; for (let i = 0; i < rhsToks.length; i++) { const t = rhsToks[i]; if (t.t !== 'op') continue; if ('([{'.includes(t.v)) dd++; else if (')]}'.includes(t.v)) dd--; else if (dd === 0 && t.v === '=') return i; } return -1; })();
+        if (chainEq >= 0 && !augOp) {
+          const targets = [targetSrc];
+          let rest = rhsToks;
+          let ci = chainEq;
+          while (ci >= 0) {
+            targets.push(toksToSrc(rest.slice(0, ci)));
+            rest = rest.slice(ci + 1);
+            ci = (() => { let dd = 0; for (let i = 0; i < rest.length; i++) { const t = rest[i]; if (t.t !== 'op') continue; if ('([{'.includes(t.v)) dd++; else if (')]}'.includes(t.v)) dd--; else if (dd === 0 && t.v === '=') return i; } return -1; })();
+          }
+          const valSrc = toksToSrc(rest);
+          const out = [];
+          const first = targets[targets.length - 1];
+          out.push(...this.stmt({ text: first + ' = ' + valSrc, line: L }, env, ind));
+          for (let i = targets.length - 2; i >= 0; i--) out.push(...this.stmt({ text: targets[i] + ' = ' + first, line: L }, env, ind));
+          if (tail) out[out.length - 1] += tail;
+          return out;
+        }
+        const rhs = parseExpr(toksToSrc(rhsToks));
+        const target = parseExpr(targetSrc);
+        if (augOp) {
+          if (target.k !== 'name' && target.k !== 'index' && target.k !== 'attr') throw new Error('неподдерживаемая цель присваивания');
+          const tc = this.ex(target, env, L).c;
+          if (target.k === 'name' && !env.declared.has(target.v) && !this.isGlobal(target.v, env) && !env.loopVars.has(target.v) && !env.hoisted.has(target.v))
+            this.warn(L, 'переменная «' + target.v + '» изменяется до объявления');
+          // для специальных операторов раскрываем в обычное присваивание
+          if (['//', '%', '**', '/'].includes(augOp) || (augOp === '*' && this.typeOf(target, env) === 'string')) {
+            const val = this.ex({ k: 'bin', op: augOp, l: target, r: rhs }, env, L).c;
+            if (target.k === 'name' && augOp === '/' && env.vars[target.v] === 'int') { this.warn(L, '«' + target.v + '» становится дробным: в C++ тип int — результат будет усечён'); }
+            return one(ind + tc + ' = ' + val + ';');
+          }
+          if (augOp === '+' && isVec(this.typeOf(target, env))) {
+            const r = this.wrap(this.ex(rhs, env, L), P.post);
+            const rc = rhs.k === 'list' ? this.typeOf(target, env) + r : r;
+            if (rhs.k === 'list') { const tmpv = '_e' + (++this.tmp); return [ind + 'for (auto ' + tmpv + ' : ' + rc + ') ' + tc + '.push_back(' + tmpv + ');' + tail]; }
+            return one(ind + tc + '.insert(' + tc + '.end(), ' + rc + '.begin(), ' + rc + '.end());');
+          }
+          let rc = this.ex(this.charify(rhs, target, env), env, L).c;
+          if (augOp === '+' && this.typeOf(target, env) === 'string' && isNum(this.typeOf(rhs, env)) && this.typeOf(rhs, env) !== 'char') { this.helpers.add('str'); rc = 'py_str(' + rc + ')'; }
+          if (target.k === 'name' && env.vars[target.v] === 'int' && this.typeOf(rhs, env) === 'double') this.warn(L, '«' + target.v + '» имеет тип int, дробная часть будет потеряна');
+          return one(ind + tc + ' ' + augOp + '= ' + rc + ';');
+        }
+        // множественное присваивание a, b = b, a
+        if (target.k === 'tuple') {
+          const names = target.items;
+          let values;
+          const out = [];
+          if (rhs.k === 'tuple') {
+            if (rhs.items.length !== names.length) throw new Error('число значений не совпадает');
+            values = rhs.items.map(v => ({ c: this.ex(v, env, L).c, t: this.typeOf(v, env) }));
+          } else {
+            // a, b = map(int, input().split())  /  a, b = s.split()
+            const rt = this.typeOf(rhs, env);
+            if (!isVec(rt)) throw new Error('распаковка поддерживается для кортежей и списков');
+            const tv = '_t' + (++this.tmp);
+            out.push(ind + 'auto ' + tv + ' = ' + this.ex(rhs, env, L).c + ';');
+            values = names.map((_, i) => ({ c: tv + '[' + i + ']', t: elemOf(rt) }));
+            names.forEach((nm, i) => out.push(this.assignOne(nm, values[i], env, ind, L)));
+            if (tail) out[out.length - 1] += tail;
+            return out;
+          }
+          // сначала вычисляем все значения во временные переменные
+          const simple = names.every(nm => nm.k === 'name');
+          if (simple && names.length === 2 && rhs.items.length === 2 && rhs.items[0].k === 'name' && rhs.items[1].k === 'name'
+            && rhs.items[0].v === names[1].v && rhs.items[1].v === names[0].v && env.declared.has(names[0].v) || false) {
+            this.need('utility');
+            return one(ind + 'swap(' + names[0].v + ', ' + names[1].v + ');');
+          }
+          const dependsOnTargets = names.some(nm => rhs.items.some(v => mentions(v, nm.k === 'name' ? nm.v : null)));
+          if (!dependsOnTargets) {
+            names.forEach((nm, i) => out.push(this.assignOne(nm, values[i], env, ind, L)));
+          } else {
+            const tmps = values.map(v => { const tv = '_t' + (++this.tmp); out.push(ind + (v.t === 'auto' ? 'auto' : v.t) + ' ' + tv + ' = ' + v.c + ';'); return { c: tv, t: v.t }; });
+            names.forEach((nm, i) => out.push(this.assignOne(nm, tmps[i], env, ind, L)));
+          }
+          if (tail) out[out.length - 1] += tail;
+          return out;
+        }
+        if (target.k === 'index' || target.k === 'attr') {
+          return one(ind + this.ex(target, env, L).c + ' = ' + this.ex(this.charify(rhs, target, env), env, L).c + ';');
+        }
+        if (target.k !== 'name') throw new Error('неподдерживаемая цель присваивания');
+        let t = annToType(ann) || this.typeOf(rhs, env);
+        // пустой список: пробуем понять тип по последующим append
+        if (rhs.k === 'list' && !rhs.items.length && !ann) t = this.guessListType(target.v, env) || 'vector<int>';
+        if (rhs.k === 'none') { t = 'int'; this.warn(L, '«' + target.v + ' = None» заменено на 0'); }
+        let vc = this.ex(rhs.k === 'list' ? { ...rhs, bare: true } : rhs, env, L).c;
+        if (rhs.k === 'list' && !rhs.items.length) vc = '{}';
+        if (t === 'double' && this.typeOf(rhs, env) === 'int') vc = vc; // неявное преобразование ok
+        const declaredType = env.vars[target.v] || this.globals[target.v];
+        if (declaredType === 'double' && this.typeOf(rhs, env) === 'int') { /* ok */ }
+        if (declaredType === 'string' && rhs.k === 'str') { /* ok */ }
+        return one(this.assignTo(target.v, vc, t, env, ind, L));
+      }
+      // выражение-инструкция
+      const e = parseExpr(s);
+      if (e.k === 'str') return [ind + '/* ' + e.v.replace(/\*\//g, '* /').split('\n').join('\n' + ind + '   ') + ' */'];
+      if (e.k !== 'call') this.warn(L, 'выражение без эффекта');
+      return one(ind + this.ex(e, env, L).c + ';');
+    }
+    assignOne(nm, v, env, ind, L) {
+      if (nm.k === 'name') return this.assignTo(nm.v, v.c, v.t, env, ind, L);
+      return ind + this.ex(nm, env, L).c + ' = ' + v.c + ';';
+    }
+    guessListType(name, env) {
+      const src = env.fnSource || '';
+      const re = new RegExp('\\b' + name + '\\.append\\((.+)\\)');
+      const m = re.exec(src);
+      if (!m) return null;
+      try {
+        const t = this.typeOf(parseExpr(m[1]), env);
+        if (t && t !== 'auto') return 'vector<' + t + '>';
+      } catch (e) { }
+      return null;
+    }
+
+    print(e, env, L) {
+      const sepE = e.kwargs.sep, endE = e.kwargs.end;
+      const sep = sepE ? this.ex(sepE, env, L).c : '" "';
+      const parts = [];
+      e.args.forEach((a, i) => {
+        if (i > 0 && !(sepE && sepE.k === 'str' && sepE.v === '')) parts.push(sep);
+        if (a.k === 'fstr') {
+          for (const p of a.parts) parts.push(typeof p === 'string' ? cppStr(p) : this.fmtPiece(p, env, L, false));
+        } else if (a.k === 'str') parts.push(cppStr(a.v));
+        else parts.push(this.fmtPiece({ expr: a, fmt: null }, env, L, false));
+      });
+      let end;
+      if (!endE) end = 'endl';
+      else if (endE.k === 'str') end = endE.v === '' ? null : endE.v === '\n' ? 'endl' : cppStr(endE.v);
+      else end = this.ex(endE, env, L).c;
+      if (end) parts.push(end);
+      // склеиваем соседние строковые литералы
+      const merged = [];
+      for (const p of parts) {
+        const last = merged[merged.length - 1];
+        if (last && /^".*"$/.test(last) && /^".*"$/.test(p) && !last.endsWith('""')) merged[merged.length - 1] = last.slice(0, -1) + p.slice(1);
+        else merged.push(p);
+      }
+      if (!merged.length) return '// print()';
+      return 'cout << ' + merged.join(' << ') + ';';
+    }
+
+    /* --- функции --- */
+    func(n, ind) {
+      const m = /^def\s+(\w+)\s*\(([\s\S]*)\)\s*(?:->\s*(.+))?$/.exec(n.head);
+      if (!m) throw new Error('не удалось разобрать def');
+      const name = m[1];
+      const sig = this.fnSigs[name];
+      const env = { vars: {}, declared: new Set(), loopVars: new Set(), hoisted: new Map(), fn: { name, retTypes: [], globals: new Set(), isMain: false }, fnSource: nodesToSrc(n.body) };
+      for (const p of sig.params) { env.vars[p.name] = p.type; env.declared.add(p.name); }
+      // глобальные: явно объявленные global + используемые, но не присваиваемые локально
+      const assigned = collectAssigned(n.body);
+      for (const g of collectGlobalDecl(n.body)) env.fn.globals.add(g);
+      for (const g of Object.keys(this.globals)) if (!assigned.has(g) && !env.declared.has(g)) env.fn.globals.add(g);
+      for (const g of env.fn.globals) env.vars[g] = this.globals[g] || 'auto';
+      this.hoist(n.body, env);
+      const body = this.body(n.body, env, ind + '    ');
+      // тип возврата
+      let ret = sig.annRet;
+      if (!ret) {
+        ret = 'void';
+        for (const t of env.fn.retTypes) ret = ret === 'void' ? t : unify(ret, t);
+        if (ret === 'void' && env.fn.retTypes.length) ret = 'auto';
+      }
+      this.newRet[name] = ret;
+      const decls = this.hoistDecls(env, ind + '    ');
+      const params = sig.params.map(p => paramDecl(p)).join(', ');
+      return { proto: retName(ret) + ' ' + sig.cname + '(' + params + ');', code: [ind + retName(ret) + ' ' + sig.cname + '(' + params + ') {' + this.tail(n), ...decls, ...body, ind + '}'] };
+    }
+    // переменные, впервые присвоенные внутри вложенного блока, но используемые снаружи → объявляем в начале
+    hoist(nodes, env) {
+      const top = new Set();
+      const nested = new Map();
+      for (const n of nodes) {
+        if (n.kind === 'stmt') { for (const v of assignedNames(n.text)) if (!nested.has(v)) top.add(v); }
+        else if (n.kind === 'block') {
+          const inner = collectAssigned(n.body);
+          for (const v of inner) if (!top.has(v) && !env.declared.has(v)) nested.set(v, n);
+        }
+      }
+      // нужно поднять, если используется вне блока, где присвоено (после него или в другом блоке)
+      for (const [v, blk] of nested) {
+        const idx = nodes.indexOf(blk);
+        const after = nodes.slice(idx + 1);
+        const usedAfter = after.some(x => nodeMentions(x, v));
+        // либо присвоено в нескольких ветках if/elif/else
+        const branches = nodes.filter(x => x.kind === 'block' && collectAssigned(x.body).has(v)).length;
+        if (usedAfter || branches > 1) env.hoisted.set(v, { type: 'auto' });
+        else this.hoistInner(blk.body, env);
+      }
+      for (const n of nodes) if (n.kind === 'block' && !/^def\b/.test(n.head)) this.hoistInner(n.body, env);
+    }
+    hoistInner(nodes, env) {
+      // для простоты: внутренние блоки — тот же алгоритм (результат общий для функции)
+      const saved = env.declared;
+      env.declared = new Set([...saved, ...env.hoisted.keys()]);
+      const nestedEnv = env;
+      const top = new Set();
+      for (const n of nodes) if (n.kind === 'stmt') for (const v of assignedNames(n.text)) top.add(v);
+      for (const n of nodes) {
+        if (n.kind !== 'block') continue;
+        for (const v of collectAssigned(n.body)) {
+          if (top.has(v) || nestedEnv.declared.has(v) || env.hoisted.has(v)) continue;
+          const idx = nodes.indexOf(n);
+          const usedAfter = nodes.slice(idx + 1).some(x => nodeMentions(x, v));
+          const branches = nodes.filter(x => x.kind === 'block' && collectAssigned(x.body).has(v)).length;
+          if (usedAfter || branches > 1) env.hoisted.set(v, { type: 'auto' });
+        }
+      }
+      env.declared = saved;
+    }
+    hoistDecls(env, ind) {
+      const out = [];
+      for (const [v, info] of env.hoisted) {
+        let t = env.vars[v] || info.type;
+        if (t === 'auto' || t === 'void') { t = 'int'; this.warn(null, 'не удалось определить тип «' + v + '», выбран int'); }
+        const init = t === 'int' || t === 'char' ? ' = 0' : t === 'double' ? ' = 0.0' : t === 'bool' ? ' = false' : '';
+        out.push(ind + t + ' ' + v + init + ';');
+      }
+      return out;
+    }
+  }
+
+  function retName(t) { return t === 'auto' ? 'auto' : t; }
+  function paramDecl(p) {
+    const t = p.type === 'auto' ? 'int' : p.type;
+    const byRef = t === 'string' || isVec(t);
+    let s = (byRef ? (p.mutated ? t + '& ' : 'const ' + t + '& ') : t + ' ') + p.name;
+    if (p.def) s += ' = ' + p.def;
+    return s;
+  }
+  function toksToSrc(toks) {
+    return toks.filter(t => t.t !== 'eof').map(t => {
+      if (t.t === 'str') return JSON.stringify(t.v);
+      if (t.t === 'fstr') return 'f"' + t.v.replace(/"/g, '\\"') + '"';
+      return t.v;
+    }).join(' ').replace(/ \. /g, '.').replace(/ \( /g, '(').replace(/ \(/g, '(').replace(/ \)/g, ')');
+  }
+  function mentions(e, name) {
+    if (!name || !e || typeof e !== 'object') return false;
+    if (e.k === 'name' && e.v === name) return true;
+    for (const k of Object.keys(e)) {
+      const v = e[k];
+      if (Array.isArray(v)) { if (v.some(x => typeof x === 'object' && (mentions(x, name) || (x && x.expr && mentions(x.expr, name))))) return true; }
+      else if (v && typeof v === 'object' && mentions(v, name)) return true;
+    }
+    return false;
+  }
+  function nodesToSrc(nodes) {
+    let s = '';
+    for (const n of nodes) {
+      if (n.kind === 'stmt') s += n.text + '\n';
+      else if (n.kind === 'block') s += n.head + ':\n' + nodesToSrc(n.body);
+    }
+    return s;
+  }
+  function wordIn(src, v) { return new RegExp('(^|[^\\w.])' + v + '(?!\\w)').test(src.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '""')); }
+  function nodeMentions(n, v) {
+    if (n.kind === 'stmt') return wordIn(n.text, v);
+    if (n.kind === 'block') return wordIn(n.head, v) || n.body.some(x => nodeMentions(x, v));
+    return false;
+  }
+  function assignedNames(text) {
+    const res = [];
+    let m = /^([\w\s,()]+?)\s*(?:\+|-|\*|\/|\/\/|%|\*\*)?=(?!=)/.exec(text);
+    if (m && !/^(if|while|return|print)\b/.test(text)) {
+      for (const p of m[1].replace(/[()]/g, '').split(',')) if (/^\s*[A-Za-z_]\w*\s*$/.test(p)) res.push(p.trim());
+    }
+    const a = /^([A-Za-z_]\w*)\s*:\s*[^=]+=/.exec(text);
+    if (a) res.push(a[1]);
+    return res;
+  }
+  function collectAssigned(nodes, set = new Set()) {
+    for (const n of nodes) {
+      if (n.kind === 'stmt') for (const v of assignedNames(n.text)) set.add(v);
+      else if (n.kind === 'block') {
+        if (/^def\b/.test(n.head)) continue;
+        const fm = /^for\s+(.+?)\s+in\b/.exec(n.head);
+        if (fm) { /* переменные цикла не поднимаем */ }
+        collectAssigned(n.body, set);
+      }
+    }
+    return set;
+  }
+  function assignsTo(nodes, v) { return collectAssigned(nodes).has(v); }
+  function collectGlobalDecl(nodes, set = new Set()) {
+    for (const n of nodes) {
+      if (n.kind === 'stmt' && /^global\s+/.test(n.text)) n.text.slice(6).split(',').forEach(v => set.add(v.trim()));
+      else if (n.kind === 'block') collectGlobalDecl(n.body, set);
+    }
+    return set;
+  }
+
+  /* ---------- Хелперы (добавляются только при использовании) ---------- */
+  const HELPERS = {
+    str: { inc: ['sstream'], code: `template <typename T>
+string py_str(const T& x) {
+    ostringstream out;
+    out << x;
+    return out.str();
+}
+string py_str(bool b) { return b ? "True" : "False"; }
+string py_str(double x) {
+    if (x == (long long)x && x < 1e16 && x > -1e16) return to_string((long long)x) + ".0";
+    ostringstream out;
+    out.precision(15);
+    out << x;
+    return out.str();
+}
+string py_str(const string& s) { return s; }` },
+    fmt: { inc: ['sstream', 'iomanip'], code: `string py_fixed(double x, int digits) {
+    ostringstream out;
+    out << fixed << setprecision(digits) << x;
+    return out.str();
+}` },
+    input: { inc: [], code: `string py_input(const string& prompt = "") {
+    cout << prompt;
+    string line;
+    getline(cin, line);
+    return line;
+}` },
+    floordiv: { inc: [], code: `long long py_floordiv(long long a, long long b) {
+    long long q = a / b;
+    if ((a % b != 0) && ((a < 0) != (b < 0))) q--;
+    return q;
+}` },
+    mod: { inc: [], code: `long long py_mod(long long a, long long b) {
+    long long r = a % b;
+    if (r != 0 && ((r < 0) != (b < 0))) r += b;
+    return r;
+}` },
+    strmul: { inc: [], code: `string py_repeat(const string& s, int n) {
+    string out;
+    for (int i = 0; i < n; ++i) out += s;
+    return out;
+}` },
+    vecadd: { inc: [], code: `template <typename T>
+vector<T> py_concat(vector<T> a, const vector<T>& b) {
+    a.insert(a.end(), b.begin(), b.end());
+    return a;
+}` },
+    split: { inc: ['sstream'], code: `vector<string> py_split(const string& s) {
+    vector<string> parts;
+    istringstream in(s);
+    string word;
+    while (in >> word) parts.push_back(word);
+    return parts;
+}
+vector<string> py_split(const string& s, const string& sep) {
+    vector<string> parts;
+    size_t start = 0, pos;
+    while ((pos = s.find(sep, start)) != string::npos) {
+        parts.push_back(s.substr(start, pos - start));
+        start = pos + sep.size();
+    }
+    parts.push_back(s.substr(start));
+    return parts;
+}` },
+    mapint: { inc: [], code: `vector<int> py_map_int(const vector<string>& v) {
+    vector<int> out;
+    for (const auto& s : v) out.push_back(stoi(s));
+    return out;
+}` },
+    mapfloat: { inc: [], code: `vector<double> py_map_float(const vector<string>& v) {
+    vector<double> out;
+    for (const auto& s : v) out.push_back(stod(s));
+    return out;
+}` },
+    toint: { inc: [], code: `int py_int(const string& s) { return stoi(s); }
+template <typename T>
+int py_int(T x) { return (int)x; }` },
+    printvec: { inc: [], code: `template <typename T>
+string py_repr(const T& x) { return py_str(x); }
+string py_repr(const string& s) { return "'" + s + "'"; }
+string py_repr(char c) { return string("'") + c + "'"; }
+template <typename T>
+ostream& operator<<(ostream& out, const vector<T>& v) {
+    out << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+        if (i) out << ", ";
+        out << py_repr(v[i]);
+    }
+    return out << "]";
+}` },
+    slice: { inc: ['climits'], code: `const long long PY_NONE = LLONG_MIN;
+template <typename S>
+S py_slice(const S& s, long long a, long long b, long long step = 1) {
+    long long n = s.size();
+    S out;
+    if (step > 0) {
+        if (a == PY_NONE) a = 0; else if (a < 0) a = max(0LL, a + n);
+        if (b == PY_NONE) b = n; else if (b < 0) b = max(0LL, b + n);
+        a = min(a, n); b = min(b, n);
+        for (long long i = a; i < b; i += step) out.push_back(s[i]);
+    } else {
+        if (a == PY_NONE) a = n - 1; else if (a < 0) a += n;
+        if (b == PY_NONE) b = -1; else if (b < 0) b = max(-1LL, b + n);
+        a = min(a, n - 1);
+        for (long long i = a; i > b; i += step) out.push_back(s[i]);
+    }
+    return out;
+}` },
+    sorted: { inc: ['algorithm'], code: `template <typename T>
+T py_sorted(T v, bool reverse = false) {
+    sort(v.begin(), v.end());
+    if (reverse) std::reverse(v.begin(), v.end());
+    return v;
+}` },
+    range: { inc: [], code: `vector<int> py_range(int a, int b = INT32_MIN, int step = 1) {
+    if (b == INT32_MIN) { b = a; a = 0; }
+    vector<int> v;
+    for (int i = a; step > 0 ? i < b : i > b; i += step) v.push_back(i);
+    return v;
+}` },
+    pop: { inc: [], code: `template <typename T>
+T py_pop(vector<T>& v) {
+    T x = v.back();
+    v.pop_back();
+    return x;
+}` },
+    popi: { inc: [], code: `template <typename T>
+T py_pop(vector<T>& v, int i) {
+    if (i < 0) i += v.size();
+    T x = v[i];
+    v.erase(v.begin() + i);
+    return x;
+}` },
+    upper: { inc: ['cctype'], code: `string py_upper(string s) {
+    for (auto& c : s) c = toupper((unsigned char)c);
+    return s;
+}` },
+    lower: { inc: ['cctype'], code: `string py_lower(string s) {
+    for (auto& c : s) c = tolower((unsigned char)c);
+    return s;
+}` },
+    strip: { inc: [], code: `string py_strip(const string& s) {
+    size_t a = s.find_first_not_of(" \\t\\n\\r");
+    if (a == string::npos) return "";
+    size_t b = s.find_last_not_of(" \\t\\n\\r");
+    return s.substr(a, b - a + 1);
+}
+string py_lstrip(const string& s) {
+    size_t a = s.find_first_not_of(" \\t\\n\\r");
+    return a == string::npos ? "" : s.substr(a);
+}
+string py_rstrip(const string& s) {
+    size_t b = s.find_last_not_of(" \\t\\n\\r");
+    return b == string::npos ? "" : s.substr(0, b + 1);
+}` },
+    join: { inc: [], code: `string py_join(const string& sep, const vector<string>& parts) {
+    string out;
+    for (size_t i = 0; i < parts.size(); ++i) {
+        if (i) out += sep;
+        out += parts[i];
+    }
+    return out;
+}` },
+    replace: { inc: [], code: `string py_replace(string s, const string& from, const string& to) {
+    if (from.empty()) return s;
+    size_t pos = 0;
+    while ((pos = s.find(from, pos)) != string::npos) {
+        s.replace(pos, from.size(), to);
+        pos += to.size();
+    }
+    return s;
+}` },
+    endswith: { inc: [], code: `bool py_endswith(const string& s, const string& suffix) {
+    return s.size() >= suffix.size() && s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
+}` },
+    strcount: { inc: [], code: `int py_count(const string& s, const string& sub) {
+    if (sub.empty()) return s.size() + 1;
+    int n = 0;
+    for (size_t pos = s.find(sub); pos != string::npos; pos = s.find(sub, pos + sub.size())) n++;
+    return n;
+}` },
+    strpred: { inc: ['cctype'], code: `bool py_all(const string& s, int (*pred)(int)) {
+    if (s.empty()) return false;
+    for (unsigned char c : s) if (!pred(c)) return false;
+    return true;
+}` },
+    factorial: { inc: [], code: `long long py_factorial(int n) {
+    long long r = 1;
+    for (int i = 2; i <= n; ++i) r *= i;
+    return r;
+}` },
+  };
+  const HELPER_ORDER = Object.keys(HELPERS);
+
+  /* ---------- Главная функция ---------- */
+  function convert(code) {
+    const tree = buildTreeShared(code);
+    const funcs = [], topLevel = [];
+    let mainGuard = null;
+    for (const n of tree) {
+      if (n.kind === 'block' && /^def\b/.test(n.head)) funcs.push(n);
+      else if (n.kind === 'block' && /^if\s+__name__\s*==\s*["']__main__["']$/.test(n.head)) mainGuard = n;
+      else topLevel.push(n);
+    }
+    // комментарии/пустые строки прямо перед def относятся к функции
+    // сигнатуры
+    const fnSigs = {};
+    const hasUserMain = funcs.some(f => /^def\s+main\b/.test(f.head));
+    const badFuncs = [];
+    for (const f of funcs) {
+      const m = /^def\s+(\w+)\s*\(([\s\S]*)\)\s*(?:->\s*(.+))?$/.exec(f.head);
+      if (!m) { badFuncs.push({ f, msg: 'не удалось разобрать заголовок функции' }); continue; }
+      try {
+      const params = splitTop(m[2]).filter(p => p.trim()).map(p => {
+        let [left, def] = splitOnce(p, '=');
+        let [name, ann] = splitOnce(left, ':');
+        name = name.trim();
+        if (name.startsWith('*')) throw new Error('*args/**kwargs не поддерживаются');
+        let type = annToType(ann && ann.trim());
+        let defC = null;
+        if (def !== null) {
+          try {
+            const de = parseExpr(def.trim());
+            if (!type) type = de.k === 'num' ? (de.isFloat ? 'double' : 'int') : de.k === 'str' ? 'string' : de.k === 'bool' ? 'bool' : null;
+            defC = de.k === 'str' ? cppStr(de.v) : de.k === 'bool' ? (de.v ? 'true' : 'false') : de.k === 'none' ? '0' : toksToSrc(tokenize(def.trim()));
+          } catch (e) { defC = def.trim(); }
+        }
+        const mutated = new RegExp('\\b' + name + '\\s*(\\.(append|pop|insert|extend|sort|reverse|clear|remove)\\(|\\[[^\\]]*\\]\\s*=(?!=))').test(nodesToSrc(f.body));
+        return { name, type: type || 'auto', annotated: !!type, def: defC, mutated };
+      });
+      fnSigs[m[1]] = { params, annRet: annToType(m[3] && m[3].trim()), ret: annToType(m[3] && m[3].trim()) || 'auto', cname: m[1] === 'main' ? 'py_main' : m[1] };
+      } catch (err) { badFuncs.push({ f, msg: err.message }); }
+    }
+
+    // глобальные переменные: присвоены на верхнем уровне и упоминаются в функциях
+    const topAssigned = collectAssigned(topLevel.filter(n => n.kind !== 'block' || !/^def\b/.test(n.head)));
+    const fnSrc = funcs.map(f => nodesToSrc(f.body)).join('\n');
+    const globalNames = [...topAssigned].filter(v => wordIn(fnSrc, v));
+
+    // итеративно уточняем типы параметров и возвращаемых значений
+    let result = null;
+    let callTypes = {};
+    let globals = {};
+    for (const g of globalNames) globals[g] = 'auto';
+    for (let pass = 0; pass < 4; pass++) {
+      const gen = new Gen({ fnSigs, callTypes, globals });
+      // сначала main-блок (собирает типы аргументов вызовов и глобальных переменных)
+      const mainEnv = { vars: {}, declared: new Set(), loopVars: new Set(), hoisted: new Map(), fn: null, fnSource: nodesToSrc(topLevel) + (mainGuard ? nodesToSrc(mainGuard.body) : '') };
+      mainEnv.fn = { name: 'main', retTypes: [], globals: new Set(globalNames), isMain: true };
+      for (const g of globalNames) mainEnv.vars[g] = globals[g];
+      const mainNodes = [...topLevel];
+      if (mainGuard) {
+        // если guard просто вызывает main() — вызываем py_main
+        mainNodes.push(...mainGuard.body);
+      }
+      gen.hoist(mainNodes, mainEnv);
+      const mainBody = gen.body(mainNodes, mainEnv, '    ');
+      // типы глобальных переменных
+      for (const g of globalNames) {
+        globals[g] = unify(globals[g], mainEnv.vars[g]);
+      }
+      const fnOut = funcs.map(f => {
+        const bad = badFuncs.find(b => b.f === f);
+        try { if (bad) throw new Error(bad.msg); return gen.func(f, ''); }
+        catch (err) { gen.warn(f.line, err.message); return { proto: null, code: ['// TODO (не сконвертировано): ' + f.head + ':', ...gen.commentOut(f.body, '')] }; }
+      });
+      // обновляем сигнатуры
+      let changed = false;
+      for (const [name, sig] of Object.entries(fnSigs)) {
+        const ct = gen.newCallTypes[name] || [];
+        sig.params.forEach((p, i) => {
+          if (p.annotated) return;
+          const nt = ct[i] && ct[i] !== 'auto' && ct[i] !== 'void' ? ct[i] : p.type;
+          if (nt !== p.type) { p.type = nt; changed = true; }
+        });
+        const nr = gen.newRet[name];
+        if (nr && nr !== sig.ret) { sig.ret = nr; changed = true; }
+      }
+      const mainDecls = gen.hoistDecls(mainEnv, '    ');
+      result = { gen, mainBody: [...mainDecls, ...mainBody], fnOut, mainEnv };
+      if (!changed && pass > 0) break;
+    }
+
+    const { gen, mainBody, fnOut } = result;
+    for (const [name, sig] of Object.entries(fnSigs)) {
+      sig.params.forEach(p => { if (p.type === 'auto') gen.warn(null, 'тип параметра «' + p.name + '» функции ' + name + '() не определён — выбран int'); });
+    }
+    // включения
+    const inc = new Set(gen.includes);
+    if (/vector</.test(mainBody.join('\n') + fnOut.map(f => f.code.join('\n')).join('\n')) || [...gen.helpers].some(h => ['split', 'mapint', 'mapfloat', 'printvec', 'vecadd', 'range', 'pop', 'popi', 'join'].includes(h))) inc.add('vector');
+    for (const h of gen.helpers) for (const i of HELPERS[h].inc) inc.add(i);
+    if (gen.helpers.has('range')) inc.add('cstdint');
+    if (gen.helpers.has('slice')) inc.add('algorithm');
+    const order = ['iostream', 'string', 'vector', 'cmath', 'algorithm', 'numeric', 'sstream', 'iomanip', 'cctype', 'climits', 'cstdint', 'utility'];
+    const lines = [];
+    for (const i of order) if (inc.has(i)) lines.push('#include <' + i + '>');
+    lines.push('using namespace std;', '');
+    // хелперы
+    const hs = HELPER_ORDER.filter(h => gen.helpers.has(h));
+    if (hs.length) {
+      lines.push('// --- вспомогательные функции (поведение как в Python) ---');
+      for (const h of hs) lines.push(HELPERS[h].code, '');
+    }
+    // глобальные
+    const globalDecls = Object.entries(globals).map(([g, t]) => (t === 'auto' || t === 'void' ? 'int' : t) + ' ' + g + (t === 'int' || t === 'auto' ? ' = 0' : t === 'double' ? ' = 0.0' : t === 'bool' ? ' = false' : '') + ';');
+    if (globalDecls.length) lines.push(...globalDecls, '');
+    // прототипы (чтобы функции можно было вызывать в любом порядке)
+    const protos = fnOut.map(f => f.proto).filter(Boolean);
+    if (protos.length > 1) lines.push(...protos, '');
+    for (const f of fnOut) lines.push(...f.code, '');
+    // main
+    lines.push('int main() {');
+    lines.push(...mainBody);
+    lines.push('    return 0;', '}');
+    const out = lines.join('\n').replace(/\n{3,}/g, '\n\n') + '\n';
+    return { code: out, warnings: gen.warnings };
+  }
+
+  function splitTop(s) {
+    const parts = []; let d = 0, q = null, cur = '';
+    for (const c of s) {
+      if (q) { cur += c; if (c === q) q = null; continue; }
+      if (c === '"' || c === "'") { q = c; cur += c; continue; }
+      if ('([{'.includes(c)) d++; else if (')]}'.includes(c)) d--;
+      if (c === ',' && d === 0) { parts.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    parts.push(cur);
+    return parts;
+  }
+  function splitOnce(s, ch) {
+    const i = s.indexOf(ch);
+    return i < 0 ? [s, null] : [s.slice(0, i), s.slice(i + 1)];
+  }
+
+  return { convert };
+})();
+
+
+
+/* ============================================================
+ * C++ → Python
+ * Токенизатор + рекурсивный разбор инструкций и выражений,
+ * отступы по вложенности блоков, cout/cin, for → range().
+ * ============================================================ */
+const CppToPy = (() => {
+
+  /* ---------- Токенизатор C++ ---------- */
+  const OPS = ['<<=', '>>=', '...', '->', '::', '++', '--', '<<', '>>', '<=', '>=', '==', '!=', '&&', '||', '+=', '-=', '*=', '/=', '%=',
+    '&=', '|=', '^=', '+', '-', '*', '/', '%', '<', '>', '=', '!', '~', '&', '|', '^', '?', ':', ';', ',', '.', '(', ')', '[', ']', '{', '}'];
+
+  function tokenize(src) {
+    const toks = [];
+    let i = 0, line = 1;
+    const push = (t, v, extra) => toks.push({ t, v, line, ...extra });
+    while (i < src.length) {
+      const c = src[i];
+      if (c === '\n') { line++; i++; continue; }
+      if (c === ' ' || c === '\t' || c === '\r') { i++; continue; }
+      if (c === '#') { // препроцессор
+        let j = i; while (j < src.length && src[j] !== '\n') { if (src[j] === '\\' && src[j + 1] === '\n') { j++; line++; } j++; }
+        push('pp', src.slice(i, j));
+        i = j; continue;
+      }
+      if (src.startsWith('//', i)) {
+        let j = i + 2; while (j < src.length && src[j] !== '\n') j++;
+        const own = !toks.length || toks[toks.length - 1].line !== line;
+        push('comment', src.slice(i + 2, j).trim(), { own });
+        i = j; continue;
+      }
+      if (src.startsWith('/*', i)) {
+        const j = src.indexOf('*/', i + 2);
+        const end = j < 0 ? src.length : j;
+        const body = src.slice(i + 2, end);
+        const own = !toks.length || toks[toks.length - 1].line !== line;
+        push('comment', body.split('\n').map(s => s.replace(/^\s*\*?\s?/, '').trimEnd()).join('\n').trim(), { own, block: true });
+        line += (body.match(/\n/g) || []).length;
+        i = end + 2; continue;
+      }
+      if (c === '"' || (c === 'R' && src[i + 1] === '"') || (/[uUL]/.test(c) && src[i + 1] === '"')) {
+        if (c !== '"' && c !== 'R') i++;
+        if (src[i] === 'R') { // raw string R"(...)"
+          const m = /^R"([^(]*)\(/.exec(src.slice(i));
+          const close = ')' + m[1] + '"';
+          const j = src.indexOf(close, i + m[0].length);
+          const v = src.slice(i + m[0].length, j);
+          line += (v.match(/\n/g) || []).length;
+          push('str', v); i = j + close.length; continue;
+        }
+        let j = i + 1, v = '';
+        while (j < src.length && src[j] !== '"') {
+          if (src[j] === '\\') { v += unescape(src[j + 1]); j += 2; continue; }
+          if (src[j] === '\n') break;
+          v += src[j++];
+        }
+        if (src[j] !== '"') throw new SyntaxError('строка ' + line + ': незакрытая строка');
+        // склейка соседних литералов "a" "b"
+        const prev = toks[toks.length - 1];
+        if (prev && prev.t === 'str') prev.v += v; else push('str', v);
+        i = j + 1; continue;
+      }
+      if (c === "'") {
+        let j = i + 1, v = '';
+        if (src[j] === '\\') { v = unescape(src[j + 1]); j += 2; } else { v = src[j]; j++; }
+        if (src[j] !== "'") throw new SyntaxError('строка ' + line + ': неверный символьный литерал');
+        push('char', v); i = j + 1; continue;
+      }
+      const num = /^(0[xX][0-9a-fA-F']+|0[bB][01']+|(\d[\d']*\.?[\d']*|\.\d[\d']*)([eE][+-]?\d+)?)([uUlLfF]*)/.exec(src.slice(i));
+      if (num && /[\d.]/.test(c) && num[0] !== '.') {
+        let v = num[1].replace(/'/g, '');
+        const isFloat = /[.eE]/.test(v) && !/^0[xX]/.test(v) || /[fF]/.test(num[4]) && /[.eE]/.test(v);
+        if (/^0\d+$/.test(v)) v = '0o' + v.slice(1);
+        if (v.endsWith('.')) v += '0';
+        if (v.startsWith('.')) v = '0' + v;
+        push('num', v, { isFloat });
+        i += num[0].length; continue;
+      }
+      const id = /^[A-Za-z_]\w*/.exec(src.slice(i));
+      if (id) { push('id', id[0]); i += id[0].length; continue; }
+      const op = OPS.find(o => src.startsWith(o, i));
+      if (op) { push('op', op); i += op.length; continue; }
+      throw new SyntaxError('строка ' + line + ': неизвестный символ «' + c + '»');
+    }
+    push('eof', '');
+    return toks;
+  }
+  function unescape(ch) { return ({ n: '\n', t: '\t', r: '\r', '0': '\0', '\\': '\\', "'": "'", '"': '"', a: '\x07', b: '\b', f: '\f', v: '\v' })[ch] ?? ch; }
+
+  /* ---------- Парсер ---------- */
+  const BASE_TYPES = new Set(['int', 'long', 'short', 'unsigned', 'signed', 'double', 'float', 'char', 'bool', 'void', 'string', 'auto', 'size_t',
+    'vector', 'int64_t', 'int32_t', 'uint64_t', 'uint32_t', 'long long', 'pair', 'map', 'set', 'unordered_map', 'unordered_set', 'array', 'deque', 'stack', 'queue', 'wchar_t']);
+  const QUALS = new Set(['const', 'static', 'constexpr', 'inline', 'volatile', 'register', 'mutable', 'extern']);
+
+  class Parser {
+    constructor(toks) {
+      this.toks = toks.filter(t => t.t !== 'pp');
+      this.p = 0;
+    }
+    peek(o = 0) {
+      // комментарии пропускаем при заглядывании внутри выражений
+      let i = this.p, n = 0;
+      for (; i < this.toks.length; i++) { if (this.toks[i].t === 'comment') continue; if (n === o) return this.toks[i]; n++; }
+      return this.toks[this.toks.length - 1];
+    }
+    next() { while (this.toks[this.p].t === 'comment') this.p++; return this.toks[this.p++]; }
+    is(v, o = 0) { const t = this.peek(o); return (t.t === 'op' || t.t === 'id') && t.v === v; }
+    accept(v) { if (this.is(v)) { this.next(); return true; } return false; }
+    expect(v) {
+      if (!this.accept(v)) { const t = this.peek(); throw new SyntaxError('строка ' + t.line + ': ожидалось «' + v + '», найдено «' + (t.v || 'конец файла') + '»'); }
+    }
+    line() { return this.peek().line; }
+    takeComments() {
+      const out = [];
+      while (this.toks[this.p] && this.toks[this.p].t === 'comment') out.push(this.toks[this.p++]);
+      return out;
+    }
+
+    // std:: и прочие квалификаторы имён
+    qualName() {
+      let t = this.next();
+      let name = t.v;
+      while (this.is('::')) { this.next(); name += '::' + this.next().v; }
+      return name.replace(/^std::/, '');
+    }
+
+    /* --- типы --- */
+    looksLikeType(o = 0) {
+      let i = o;
+      while (this.peek(i).t === 'id' && QUALS.has(this.peek(i).v)) i++;
+      const t = this.peek(i);
+      if (t.t !== 'id') return false;
+      let name = t.v;
+      let j = i + 1;
+      if (name === 'std' && this.is('::', j - i + o - o)) { /* handled below */ }
+      if (name === 'std') { if (this.peek(i + 1).v !== '::') return false; name = this.peek(i + 2).v; j = i + 3; }
+      if (BASE_TYPES.has(name)) return true;
+      // пользовательский тип: Name ident ...
+      const n1 = this.peek(j);
+      return false && n1;
+    }
+    type() {
+      const quals = [];
+      while (this.peek().t === 'id' && QUALS.has(this.peek().v)) quals.push(this.next().v);
+      let name = this.qualName();
+      // составные: unsigned long long, long long int ...
+      while (this.peek().t === 'id' && ['long', 'int', 'short', 'unsigned', 'signed', 'double', 'char'].includes(this.peek().v) && ['long', 'unsigned', 'signed', 'short'].includes(name.split(' ').pop())) name += ' ' + this.next().v;
+      let args = null;
+      if (this.is('<')) {
+        this.next();
+        args = [];
+        let depth = 1;
+        let cur = [];
+        // аргументы шаблона
+        while (depth > 0) {
+          if (this.is('>>')) { // vector<vector<int>>
+            const t = this.next();
+            this.toks.splice(this.p, 0, { t: 'op', v: '>', line: t.line });
+            depth--;
+            if (depth === 0) break;
+            continue;
+          }
+          if (this.is('>')) { this.next(); depth--; if (depth === 0) break; continue; }
+          if (this.is('<')) { this.next(); depth++; continue; }
+          if (this.is(',') && depth === 1) { this.next(); continue; }
+          if (depth === 1 && this.peek().t === 'id') { args.push(this.type()); continue; }
+          if (this.peek().t === 'num') { args.push({ name: this.next().v }); continue; }
+          this.next();
+        }
+      }
+      while (this.is('const')) this.next();
+      let ref = false, ptr = 0;
+      for (;;) {
+        if (this.accept('&') || this.accept('&&')) ref = true;
+        else if (this.accept('*')) ptr++;
+        else if (this.accept('const')) { }
+        else break;
+      }
+      return { name, args, ref, ptr, quals };
+    }
+
+    /* --- верхний уровень --- */
+    program() {
+      const items = [];
+      for (;;) {
+        const cs = this.takeComments();
+        for (const c of cs) items.push({ k: 'comment', v: c.v, line: c.line });
+        if (this.peek().t === 'eof') break;
+        const line = this.line();
+        if (this.accept(';')) continue;
+        if (this.is('using') || this.is('typedef')) { this.skipTo(';'); continue; }
+        if (this.is('namespace')) { this.skipBalanced(); items.push({ k: 'unsupported', what: 'namespace', line }); continue; }
+        if (this.is('struct') || this.is('class') || this.is('enum') || this.is('union') || this.is('template')) {
+          const what = this.peek().v;
+          this.skipBalanced();
+          this.accept(';');
+          items.push({ k: 'unsupported', what, line });
+          continue;
+        }
+        const start = this.p;
+        try {
+          const ty = this.type();
+          const nameTok = this.peek();
+          if (nameTok.t !== 'id') throw new SyntaxError('строка ' + line + ': ожидалось имя');
+          if (this.is('(', 1)) {
+            const name = this.qualName();
+            this.expect('(');
+            const params = this.params();
+            this.expect(')');
+            while (this.is('const') || this.is('noexcept') || this.is('override')) this.next();
+            if (this.accept(';')) continue; // прототип
+            const body = this.block();
+            items.push({ k: 'func', ret: ty, name, params, body, line });
+            continue;
+          }
+          items.push(this.declRest(ty, line));
+        } catch (e) {
+          if (!(e instanceof SyntaxError)) throw e;
+          // фрагмент без функции: пробуем как обычную инструкцию
+          this.p = start;
+          const st = this.stmtSafe();
+          if (st.k === 'error' && this.p === start) this.skipStatement();
+          items.push({ k: 'topstmt', s: st, line });
+        }
+      }
+      return items;
+    }
+    skipTo(v) { while (this.peek().t !== 'eof' && !this.is(v)) this.next(); this.accept(v); }
+    skipBalanced() {
+      while (this.peek().t !== 'eof' && !this.is('{') && !this.is(';')) this.next();
+      if (this.accept(';')) return;
+      let d = 0;
+      do {
+        const t = this.next();
+        if (t.v === '{') d++; else if (t.v === '}') d--;
+      } while (d > 0 && this.peek().t !== 'eof');
+    }
+    skipStatement() {
+      let d = 0;
+      while (this.peek().t !== 'eof') {
+        const t = this.next();
+        if (t.v === '{' || t.v === '(') d++;
+        else if (t.v === '}' || t.v === ')') { d--; if (d <= 0 && t.v === '}') return; }
+        else if (t.v === ';' && d <= 0) return;
+      }
+    }
+    params() {
+      const ps = [];
+      if (this.is(')')) return ps;
+      if (this.is('void') && this.is(')', 1)) { this.next(); return ps; }
+      do {
+        const ty = this.type();
+        let name = this.peek().t === 'id' ? this.next().v : '_';
+        let arr = false;
+        while (this.accept('[')) { while (!this.is(']')) this.next(); this.expect(']'); arr = true; }
+        let def = null;
+        if (this.accept('=')) def = this.assignExpr();
+        if (arr) ty.args = [{ name: ty.name }], ty.name = 'vector';
+        ps.push({ ty, name, def });
+      } while (this.accept(','));
+      return ps;
+    }
+    // после типа: имя [= init] {, имя [= init]} ;
+    declRest(ty, line, noSemi) {
+      const decls = [];
+      do {
+        while (this.accept('*') || this.accept('&')) { }
+        const name = this.next().v;
+        const dims = [];
+        while (this.accept('[')) { dims.push(this.is(']') ? null : this.expr()); this.expect(']'); }
+        let init = null, ctor = null;
+        if (this.accept('=')) init = this.is('{') ? this.initList() : this.assignExpr();
+        else if (this.is('{')) init = this.initList();
+        else if (this.is('(')) { this.next(); ctor = []; if (!this.is(')')) do ctor.push(this.assignExpr()); while (this.accept(',')); this.expect(')'); }
+        decls.push({ name, dims, init, ctor });
+      } while (this.accept(','));
+      if (!noSemi) this.expect(';');
+      return { k: 'decl', ty, decls, line };
+    }
+    initList() {
+      this.expect('{');
+      const items = [];
+      while (!this.is('}')) {
+        items.push(this.is('{') ? this.initList() : this.assignExpr());
+        if (!this.accept(',')) break;
+      }
+      this.expect('}');
+      return { k: 'list', items };
+    }
+
+    /* --- инструкции --- */
+    block() {
+      this.expect('{');
+      const body = [];
+      for (;;) {
+        for (const c of this.takeComments()) body.push({ k: 'comment', v: c.v, line: c.line, own: c.own });
+        if (this.is('}') || this.peek().t === 'eof') break;
+        body.push(this.stmtSafe());
+      }
+      this.expect('}');
+      // комментарий в конце строки с закрывающей скобкой
+      return body;
+    }
+    stmtSafe() {
+      const start = this.p, line = this.line();
+      try { return this.stmt(); }
+      catch (e) {
+        if (!(e instanceof SyntaxError)) throw e;
+        this.p = start;
+        this.skipStatement();
+        const src = this.toks.slice(start, this.p).filter(t => t.t !== 'comment').map(t => t.t === 'str' ? JSON.stringify(t.v) : t.t === 'char' ? "'" + t.v + "'" : t.v).join(' ');
+        return { k: 'error', msg: e.message, src, line };
+      }
+    }
+    stmt() {
+      const line = this.line();
+      const t = this.peek();
+      if (this.is('{')) return { k: 'block', body: this.block(), line };
+      if (this.accept(';')) return { k: 'empty', line };
+      if (t.t === 'id') {
+        switch (t.v) {
+          case 'if': {
+            this.next(); this.expect('(');
+            const c = this.condExpr();
+            this.expect(')');
+            const then = this.stmtSafe();
+            let els = null;
+            this.takeTrailing(then);
+            if (this.accept('else')) els = this.stmtSafe();
+            return { k: 'if', c, then, els, line };
+          }
+          case 'while': {
+            this.next(); this.expect('(');
+            const c = this.condExpr();
+            this.expect(')');
+            return { k: 'while', c, body: this.stmtSafe(), line };
+          }
+          case 'do': {
+            this.next();
+            const body = this.stmtSafe();
+            this.expect('while'); this.expect('(');
+            const c = this.expr();
+            this.expect(')'); this.expect(';');
+            return { k: 'dowhile', c, body, line };
+          }
+          case 'for': {
+            this.next(); this.expect('(');
+            // range-for: for (auto x : v)
+            const save = this.p;
+            if (this.looksLikeType()) {
+              const ty = this.type();
+              const name = this.peek().t === 'id' ? this.peek().v : null;
+              if (name && this.is(':', 1)) {
+                this.next(); this.next();
+                const coll = this.expr();
+                this.expect(')');
+                return { k: 'foreach', ty, name, coll, body: this.stmtSafe(), line };
+              }
+              this.p = save;
+            }
+            let init = null;
+            if (!this.is(';')) {
+              if (this.looksLikeType()) init = this.declRest(this.type(), line, true);
+              else init = { k: 'expr', e: this.expr(), line };
+            }
+            this.expect(';');
+            const c = this.is(';') ? null : this.expr();
+            this.expect(';');
+            const step = this.is(')') ? null : this.expr();
+            this.expect(')');
+            return { k: 'for', init, c, step, body: this.stmtSafe(), line };
+          }
+          case 'return': {
+            this.next();
+            const e = this.is(';') ? null : this.expr();
+            this.expect(';');
+            return { k: 'return', e, line };
+          }
+          case 'break': case 'continue': this.next(); this.expect(';'); return { k: t.v, line };
+          case 'switch': return this.switchStmt();
+          case 'goto': case 'try': case 'throw': case 'struct': case 'class': throw new SyntaxError('строка ' + line + ': «' + t.v + '» не поддерживается');
+        }
+        if (!this.looksLikeType() && this.peek(1).t === 'id' && !['else', 'case'].includes(t.v) && (this.is(';', 2) || this.is('=', 2) || this.is('(', 2) || this.is('{', 2)))
+          throw new SyntaxError('строка ' + line + ': тип «' + t.v + '» не поддерживается');
+        if (this.looksLikeType() && (this.peek(1).t === 'id' || this.is('<', 1) || this.is('::', 1) || this.is('&', 1) || this.is('*', 1) || QUALS.has(t.v))) {
+          const save = this.p;
+          try { return this.declRest(this.type(), line); }
+          catch (e) { this.p = save; if (!(e instanceof SyntaxError)) throw e; }
+        }
+      }
+      const e = this.expr();
+      this.expect(';');
+      return { k: 'expr', e, line };
+    }
+    takeTrailing() { }
+    switchStmt() {
+      const line = this.line();
+      this.next(); this.expect('(');
+      const subj = this.expr();
+      this.expect(')'); this.expect('{');
+      const cases = [];
+      let cur = null;
+      for (;;) {
+        this.takeComments();
+        if (this.is('}')) break;
+        if (this.accept('case')) {
+          const v = this.condExpr();
+          this.expect(':');
+          if (cur && !cur.body.length && !cur.isDefault) cur.vals.push(v);
+          else { cur = { vals: [v], body: [] }; cases.push(cur); }
+          continue;
+        }
+        if (this.accept('default')) { this.expect(':'); cur = { vals: [], isDefault: true, body: [] }; cases.push(cur); continue; }
+        if (!cur) throw new SyntaxError('строка ' + this.line() + ': код вне case');
+        cur.body.push(this.stmtSafe());
+      }
+      this.expect('}');
+      return { k: 'switch', subj, cases, line };
+    }
+
+    /* --- выражения --- */
+    expr() {
+      let e = this.assignExpr();
+      while (this.is(',')) { this.next(); e = { k: 'comma', l: e, r: this.assignExpr() }; }
+      return e;
+    }
+    // условие без запятой (в if/while/case)
+    condExpr() { return this.expr(); }
+    assignExpr() {
+      const l = this.ternary();
+      const t = this.peek();
+      if (t.t === 'op' && ['=', '+=', '-=', '*=', '/=', '%=', '<<=', '>>=', '&=', '|=', '^='].includes(t.v)) {
+        this.next();
+        return { k: 'assign', op: t.v, l, r: this.is('{') ? this.initList() : this.assignExpr() };
+      }
+      return l;
+    }
+    ternary() {
+      const c = this.bin(0);
+      if (this.accept('?')) {
+        const a = this.assignExpr();
+        this.expect(':');
+        const b = this.assignExpr();
+        return { k: 'tern', c, a, b };
+      }
+      return c;
+    }
+    bin(level) {
+      const LV = [['||'], ['&&'], ['|'], ['^'], ['&'], ['==', '!='], ['<', '>', '<=', '>='], ['<<', '>>'], ['+', '-'], ['*', '/', '%']];
+      if (level >= LV.length) return this.unary();
+      let l = this.bin(level + 1);
+      for (;;) {
+        const t = this.peek();
+        if (t.t === 'op' && LV[level].includes(t.v)) { this.next(); l = { k: 'bin', op: t.v, l, r: this.bin(level + 1) }; }
+        else return l;
+      }
+    }
+    unary() {
+      const t = this.peek();
+      if (t.t === 'op') {
+        if (['!', '-', '+', '~'].includes(t.v)) { this.next(); return { k: 'un', op: t.v, x: this.unary() }; }
+        if (t.v === '++' || t.v === '--') { this.next(); return { k: 'preinc', op: t.v, x: this.unary() }; }
+        if (t.v === '*' || t.v === '&') throw new SyntaxError('строка ' + t.line + ': указатели не поддерживаются');
+        if (t.v === '(' && this.looksLikeType(1)) {
+          // приведение (int)x
+          const save = this.p;
+          this.next();
+          const ty = this.type();
+          if (this.accept(')')) return { k: 'cast', ty, x: this.unary() };
+          this.p = save;
+        }
+      }
+      if (t.t === 'id' && t.v === 'sizeof') throw new SyntaxError('строка ' + t.line + ': sizeof не поддерживается');
+      if (t.t === 'id' && t.v === 'new') throw new SyntaxError('строка ' + t.line + ': new не поддерживается');
+      return this.postfix();
+    }
+    postfix() {
+      let x = this.primary();
+      for (;;) {
+        if (this.is('(')) {
+          this.next();
+          const args = [];
+          if (!this.is(')')) do args.push(this.is('{') ? this.initList() : this.assignExpr()); while (this.accept(','));
+          this.expect(')');
+          x = { k: 'call', fn: x, args };
+        } else if (this.accept('[')) {
+          const idx = this.expr();
+          this.expect(']');
+          x = { k: 'index', obj: x, idx };
+        } else if (this.is('.') || this.is('->')) {
+          this.next();
+          x = { k: 'member', obj: x, name: this.next().v };
+        } else if (this.is('++') || this.is('--')) {
+          x = { k: 'postinc', op: this.next().v, x };
+        } else return x;
+      }
+    }
+    primary() {
+      const t = this.peek();
+      if (t.t === 'num') { this.next(); return { k: 'num', v: t.v, isFloat: t.isFloat }; }
+      if (t.t === 'str') { this.next(); return { k: 'str', v: t.v }; }
+      if (t.t === 'char') { this.next(); return { k: 'char', v: t.v }; }
+      if (t.t === 'id') {
+        if (t.v === 'true' || t.v === 'false') { this.next(); return { k: 'bool', v: t.v === 'true' }; }
+        if (t.v === 'nullptr' || t.v === 'NULL') { this.next(); return { k: 'none' }; }
+        if (['static_cast', 'int', 'double', 'float', 'long', 'char', 'bool', 'string'].includes(t.v) && (this.is('<', 1) || this.is('(', 1))) {
+          // static_cast<T>(x) / int(x) / string(…)
+          if (t.v === 'static_cast') {
+            this.next(); this.expect('<'); const ty = this.type(); this.expect('>');
+            this.expect('('); const x = this.expr(); this.expect(')');
+            return { k: 'cast', ty, x };
+          }
+        }
+        if (this.looksLikeType() && (this.is('<', 1) || (this.peek(1).v === '::' && this.peek(3).v === '<'))) {
+          // vector<int>{...} / vector<int>(n, 0)
+          const save = this.p;
+          try {
+            const ty = this.type();
+            if (this.is('{')) return { k: 'construct', ty, list: this.initList() };
+            if (this.is('(')) { this.next(); const args = []; if (!this.is(')')) do args.push(this.assignExpr()); while (this.accept(',')); this.expect(')'); return { k: 'construct', ty, args }; }
+          } catch (e) { if (!(e instanceof SyntaxError)) throw e; }
+          this.p = save;
+        }
+        return { k: 'name', v: this.qualName() };
+      }
+      if (t.v === '(') { this.next(); const e = this.expr(); this.expect(')'); return { k: 'paren', x: e }; }
+      if (t.v === '[') throw new SyntaxError('строка ' + t.line + ': лямбды не поддерживаются');
+      if (t.v === '{') return this.initList();
+      throw new SyntaxError('строка ' + t.line + ': неожиданный токен «' + (t.v || 'конец файла') + '»');
+    }
+  }
+
+  /* ---------- Генерация Python ---------- */
+  // приоритеты Python
+  const P = { tern: 1, or: 2, and: 3, not: 4, cmp: 5, bor: 6, bxor: 7, band: 8, shift: 9, add: 10, mul: 11, un: 12, pow: 13, post: 14, atom: 15 };
+  const BIN = {
+    '||': ['or', P.or], '&&': ['and', P.and], '|': ['|', P.bor], '^': ['^', P.bxor], '&': ['&', P.band],
+    '==': ['==', P.cmp], '!=': ['!=', P.cmp], '<': ['<', P.cmp], '>': ['>', P.cmp], '<=': ['<=', P.cmp], '>=': ['>=', P.cmp],
+    '<<': ['<<', P.shift], '>>': ['>>', P.shift], '+': ['+', P.add], '-': ['-', P.add], '*': ['*', P.mul], '/': ['/', P.mul], '%': ['%', P.mul]
+  };
+  const MATH = new Set(['sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'atan2', 'exp', 'log', 'log2', 'log10', 'floor', 'ceil', 'hypot', 'fabs', 'trunc', 'fmod']);
+
+  function typeName(ty) {
+    if (!ty) return 'auto';
+    const n = ty.name.replace(/^const\s+/, '');
+    if (/^(unsigned |signed )?(long long|long|int|short|size_t|int64_t|int32_t|uint64_t|uint32_t|unsigned|long int|long long int|unsigned int|unsigned long long)$/.test(n) || n === 'unsigned') return 'int';
+    if (n === 'double' || n === 'float' || n === 'long double') return 'float';
+    if (n === 'char' || n === 'wchar_t') return 'char';
+    if (n === 'bool') return 'bool';
+    if (n === 'string') return 'str';
+    if (n === 'vector' || n === 'array' || n === 'deque') return 'list<' + (ty.args && ty.args[0] ? typeName(ty.args[0]) : 'auto') + '>';
+    if (n === 'void') return 'void';
+    if (n === 'auto') return 'auto';
+    return 'other:' + n;
+  }
+  const isList = t => /^list</.test(t || '');
+  const elemOf = t => isList(t) ? t.slice(5, -1) : (t === 'str' ? 'char' : 'auto');
+  const isNumT = t => t === 'int' || t === 'float' || t === 'bool' || t === 'char';
+
+  function pyStr(s, quote = '"') {
+    let o = quote;
+    for (const ch of s) {
+      if (ch === quote) o += '\\' + quote;
+      else if (ch === '\\') o += '\\\\';
+      else if (ch === '\n') o += '\\n';
+      else if (ch === '\t') o += '\\t';
+      else if (ch === '\r') o += '\\r';
+      else if (ch === '\0') o += '\\0';
+      else if (ch.charCodeAt(0) < 32) o += '\\x' + ch.charCodeAt(0).toString(16).padStart(2, '0');
+      else o += ch;
+    }
+    return o + quote;
+  }
+
+  class Gen {
+    constructor() {
+      this.warnings = [];
+      this.imports = new Set();
+      this.fnRet = {};
+      this.globals = {};
+      this.fmt = { fixed: false, prec: null };
+      this.tmp = 0;
+    }
+    warn(line, msg) { const w = (line ? 'Строка ' + line + ': ' : '') + msg; if (!this.warnings.includes(w)) this.warnings.push(w); }
+    wrap(r, minP) { return r.p < minP ? '(' + r.c + ')' : r.c; }
+
+    typeOf(e, env) {
+      switch (e.k) {
+        case 'num': return e.isFloat ? 'float' : 'int';
+        case 'str': return 'str';
+        case 'char': return 'char';
+        case 'bool': return 'bool';
+        case 'paren': return this.typeOf(e.x, env);
+        case 'name': return env.vars[e.v] || this.globals[e.v] || (e.v === 'M_PI' ? 'float' : 'auto');
+        case 'index': return elemOf(this.typeOf(e.obj, env));
+        case 'cast': return typeName(e.ty);
+        case 'un': return e.op === '!' ? 'bool' : this.typeOf(e.x, env);
+        case 'bin': {
+          if (['==', '!=', '<', '>', '<=', '>=', '&&', '||'].includes(e.op)) return 'bool';
+          const a = this.typeOf(e.l, env), b = this.typeOf(e.r, env);
+          if (e.op === '+' && (a === 'str' || b === 'str')) return 'str';
+          if (a === 'float' || b === 'float') return 'float';
+          if (a === 'auto' || b === 'auto') return 'auto';
+          return 'int';
+        }
+        case 'tern': { const a = this.typeOf(e.a, env); return a === 'auto' ? this.typeOf(e.b, env) : a; }
+        case 'call': {
+          if (e.fn.k === 'name') {
+            const n = e.fn.v;
+            if (this.fnRet[n]) return this.fnRet[n];
+            if (MATH.has(n) || n === 'pow') return ['floor', 'ceil', 'trunc'].includes(n) ? 'float' : 'float';
+            if (n === 'abs' || n === 'max' || n === 'min') return e.args[0] ? this.typeOf(e.args[0], env) : 'int';
+            if (n === 'to_string' || n === 'string') return 'str';
+            if (n === 'stoi' || n === 'stol' || n === 'stoll') return 'int';
+            if (n === 'stod' || n === 'stof') return 'float';
+            if (n === 'round') return 'float';
+          }
+          if (e.fn.k === 'member') {
+            const m = e.fn.name;
+            const ot = this.typeOf(e.fn.obj, env);
+            if (m === 'size' || m === 'length' || m === 'find') return 'int';
+            if (m === 'substr') return 'str';
+            if (m === 'back' || m === 'front' || m === 'at') return elemOf(ot);
+            if (m === 'empty') return 'bool';
+          }
+          return 'auto';
+        }
+        case 'construct': return typeName(e.ty);
+        case 'assign': return this.typeOf(e.l, env);
+      }
+      return 'auto';
+    }
+
+    ex(e, env, line) {
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      switch (e.k) {
+        case 'num': return { c: e.v, p: P.atom };
+        case 'str': return { c: pyStr(e.v), p: P.atom };
+        case 'char': return { c: pyStr(e.v), p: P.atom };
+        case 'bool': return { c: e.v ? 'True' : 'False', p: P.atom };
+        case 'none': return { c: 'None', p: P.atom };
+        case 'paren': return this.ex(e.x, env, line);
+        case 'name': {
+          const n = e.v;
+          if (n === 'M_PI') { this.imports.add('math'); return { c: 'math.pi', p: P.post }; }
+          if (n === 'M_E') { this.imports.add('math'); return { c: 'math.e', p: P.post }; }
+          if (n === 'INT_MAX' || n === 'LLONG_MAX') { this.imports.add('sys'); return { c: 'sys.maxsize', p: P.post }; }
+          if (n === 'INT_MIN' || n === 'LLONG_MIN') { this.imports.add('sys'); return { c: '-sys.maxsize - 1', p: P.add }; }
+          if (n === 'endl') return { c: '"\\n"', p: P.atom };
+          return { c: n.replace(/::/g, '.'), p: P.atom };
+        }
+        case 'list': return { c: '[' + e.items.map(x => E(x, P.tern)).join(', ') + ']', p: P.atom };
+        case 'index': return { c: E(e.obj, P.post) + '[' + E(e.idx, P.tern) + ']', p: P.post };
+        case 'un': {
+          if (e.op === '!') return { c: 'not ' + E(e.x, P.not), p: P.not };
+          return { c: e.op + E(e.x, P.un), p: P.un };
+        }
+        case 'cast': {
+          const t = typeName(e.ty);
+          const xt = this.typeOf(e.x, env);
+          if (t === 'int') { if (xt === 'char') return { c: 'ord(' + E(e.x, P.tern) + ')', p: P.post }; if (xt === 'int') return this.ex(e.x, env, line); return { c: 'int(' + E(e.x, P.tern) + ')', p: P.post }; }
+          if (t === 'float') return { c: 'float(' + E(e.x, P.tern) + ')', p: P.post };
+          if (t === 'char') return { c: 'chr(' + E(e.x, P.tern) + ')', p: P.post };
+          if (t === 'bool') return { c: 'bool(' + E(e.x, P.tern) + ')', p: P.post };
+          if (t === 'str') return { c: 'str(' + E(e.x, P.tern) + ')', p: P.post };
+          return this.ex(e.x, env, line);
+        }
+        case 'tern': return { c: E(e.a, P.tern + 1) + ' if ' + E(e.c, P.tern + 1) + ' else ' + E(e.b, P.tern), p: P.tern };
+        case 'bin': return this.binary(e, env, line);
+        case 'call': return this.call(e, env, line);
+        case 'member': {
+          this.warn(line, 'поле «.' + e.name + '» перенесено как есть');
+          return { c: E(e.obj, P.post) + '.' + e.name, p: P.post };
+        }
+        case 'construct': {
+          const t = typeName(e.ty);
+          if (isList(t)) {
+            if (e.list) return this.ex(e.list, env, line);
+            if (e.args.length === 0) return { c: '[]', p: P.atom };
+            const fill = e.args[1] ? E(e.args[1], P.tern) : this.zero(elemOf(t));
+            return { c: '[' + fill + '] * ' + E(e.args[0], P.mul + 1), p: P.mul };
+          }
+          if (t === 'str') {
+            if (e.args && e.args.length === 2) return { c: E(e.args[1], P.mul) + ' * ' + E(e.args[0], P.mul + 1), p: P.mul };
+            if (e.args && e.args.length === 1) return { c: 'str(' + E(e.args[0], P.tern) + ')', p: P.post };
+            return { c: '""', p: P.atom };
+          }
+          throw new SyntaxError('строка ' + line + ': тип ' + e.ty.name + ' не поддерживается');
+        }
+        case 'preinc': case 'postinc':
+          throw new SyntaxError('строка ' + line + ': ' + e.op + ' внутри выражения не поддерживается');
+        case 'assign':
+          throw new SyntaxError('строка ' + line + ': присваивание внутри выражения не поддерживается');
+        case 'comma':
+          throw new SyntaxError('строка ' + line + ': оператор «запятая» не поддерживается');
+      }
+      throw new SyntaxError('строка ' + line + ': неподдерживаемое выражение');
+    }
+    zero(t) { return t === 'float' ? '0.0' : t === 'str' ? '""' : t === 'bool' ? 'False' : t === 'char' ? '"\\0"' : isList(t) ? '[]' : '0'; }
+
+    binary(e, env, line) {
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      const lt = this.typeOf(e.l, env), rt = this.typeOf(e.r, env);
+      let [op, pp] = BIN[e.op];
+      // символы в арифметике: c - '0' → ord(c) - ord("0")
+      if (['+', '-', '*'].includes(e.op) && (lt === 'char' || rt === 'char') && !(e.op === '+' && (lt === 'str' || rt === 'str'))) {
+        const side = (x, t) => t === 'char' ? 'ord(' + E(x, P.tern) + ')' : E(x, pp);
+        return { c: side(e.l, lt) + ' ' + op + ' ' + (rt === 'char' ? 'ord(' + E(e.r, P.tern) + ')' : E(e.r, pp + 1)), p: pp };
+      }
+      if (e.op === '/') {
+        if (lt !== 'float' && rt !== 'float') {
+          if (lt === 'auto' || rt === 'auto') this.warn(line, 'не удалось определить типы при делении — используется «//» (целочисленное)');
+          op = '//';
+          // C++ округляет к нулю, Python — вниз: для отрицательных чисел результат может отличаться
+        }
+      }
+      if (e.op === '%' && (lt === 'float' || rt === 'float')) { this.imports.add('math'); return { c: 'math.fmod(' + E(e.l, P.tern) + ', ' + E(e.r, P.tern) + ')', p: P.post }; }
+      if (e.op === '+' && lt === 'str' && rt === 'char') { /* str + char → конкатенация */ }
+      if (e.op === '+' && (lt === 'str') && isNumT(rt) && rt !== 'char') this.warn(line, 'строка + число: проверьте преобразование');
+      // в Python сравнения — одного уровня и образуют цепочки, поэтому вложенные оборачиваем в скобки
+      if (pp === P.cmp) return { c: E(e.l, P.cmp + 1) + ' ' + op + ' ' + E(e.r, P.cmp + 1), p: P.cmp };
+      if (op === 'and' || op === 'or') return { c: E(e.l, pp) + ' ' + op + ' ' + E(e.r, pp + 1), p: pp };
+      return { c: E(e.l, pp) + ' ' + op + ' ' + E(e.r, pp + 1), p: pp };
+    }
+
+    call(e, env, line) {
+      const E = (x, minP) => this.wrap(this.ex(x, env, line), minP);
+      const A = () => e.args.map(a => E(a, P.tern)).join(', ');
+      if (e.fn.k === 'name') {
+        const n = e.fn.v;
+        switch (n) {
+          case 'pow': return { c: E(e.args[0], P.pow + 1) + ' ** ' + E(e.args[1], P.un), p: P.pow };
+          case 'abs': case 'fabs': return { c: 'abs(' + A() + ')', p: P.post };
+          case 'max': case 'min': return { c: n + '(' + A() + ')', p: P.post };
+          case 'to_string': return { c: 'str(' + A() + ')', p: P.post };
+          case 'stoi': case 'stol': case 'stoll': case 'atoi': return { c: 'int(' + A() + ')', p: P.post };
+          case 'stod': case 'stof': case 'atof': return { c: 'float(' + A() + ')', p: P.post };
+          case 'round': return { c: 'round(' + A() + ')', p: P.post };
+          case 'swap': throw new SyntaxError('строка ' + line + ': swap() поддерживается только как отдельная инструкция');
+          case 'sort': case 'reverse': throw new SyntaxError('строка ' + line + ': ' + n + '() поддерживается только как отдельная инструкция');
+          case 'isdigit': case 'isalpha': case 'isupper': case 'islower': case 'isspace': case 'isalnum':
+            return { c: E(e.args[0], P.post) + '.' + n + '()', p: P.post };
+          case 'toupper': case 'tolower':
+            return { c: E(e.args[0], P.post) + '.' + (n === 'toupper' ? 'upper' : 'lower') + '()', p: P.post };
+          case 'printf': case 'scanf': throw new SyntaxError('строка ' + line + ': ' + n + '() не поддерживается — используйте cout/cin');
+          case 'accumulate':
+            if (e.args.length >= 2 && e.args[0].k === 'call' && e.args[0].fn.k === 'member' && e.args[0].fn.name === 'begin')
+              return { c: 'sum(' + E(e.args[0].fn.obj, P.tern) + ')', p: P.post };
+            break;
+          case 'max_element': case 'min_element':
+            break;
+          case 'gcd': case '__gcd': this.imports.add('math'); return { c: 'math.gcd(' + A() + ')', p: P.post };
+        }
+        if (MATH.has(n)) {
+          this.imports.add('math');
+          if (n === 'floor' || n === 'ceil' || n === 'trunc') return { c: 'math.' + n + '(' + A() + ')', p: P.post };
+          return { c: 'math.' + n + '(' + A() + ')', p: P.post };
+        }
+        return { c: n.replace(/::/g, '.') + '(' + A() + ')', p: P.post };
+      }
+      if (e.fn.k === 'member') {
+        const objE = e.fn.obj, m = e.fn.name;
+        const ot = this.typeOf(objE, env);
+        const o = E(objE, P.post);
+        switch (m) {
+          case 'size': case 'length': return { c: 'len(' + E(objE, P.tern) + ')', p: P.post };
+          case 'push_back': case 'emplace_back': return { c: o + '.append(' + A() + ')', p: P.post };
+          case 'pop_back': return { c: o + '.pop()', p: P.post };
+          case 'back': return { c: o + '[-1]', p: P.post };
+          case 'front': return { c: o + '[0]', p: P.post };
+          case 'empty': return { c: 'len(' + E(objE, P.tern) + ') == 0', p: P.cmp };
+          case 'clear': return { c: o + '.clear()', p: P.post };
+          case 'at': return { c: o + '[' + A() + ']', p: P.post };
+          case 'substr': {
+            const a = E(e.args[0], P.tern);
+            if (e.args.length === 1) return { c: o + '[' + a + ':]', p: P.post };
+            const len = e.args[1];
+            const aN = e.args[0].k === 'num' && e.args[0].v === '0';
+            return { c: o + '[' + a + ':' + (aN ? E(len, P.tern) : E(e.args[0], P.add) + ' + ' + E(len, P.add + 1)) + ']', p: P.post };
+          }
+          case 'find': {
+            this.warn(line, 'find(): в Python возвращает -1 вместо string::npos');
+            return { c: o + '.find(' + A() + ')', p: P.post };
+          }
+          case 'insert':
+            if (e.args.length === 2 && e.args[0].k === 'bin' && e.args[0].l.k === 'call' && e.args[0].l.fn.k === 'member' && e.args[0].l.fn.name === 'begin')
+              return { c: o + '.insert(' + E(e.args[0].r, P.tern) + ', ' + E(e.args[1], P.tern) + ')', p: P.post };
+            break;
+        }
+        this.warn(line, 'метод «.' + m + '()» перенесён как есть');
+        return { c: o + '.' + m + '(' + A() + ')', p: P.post };
+      }
+      return { c: E(e.fn, P.post) + '(' + A() + ')', p: P.post };
+    }
+
+    /* --- инструкции --- */
+    body(stmts, env, ind, loop) {
+      const out = [];
+      for (let i = 0; i < stmts.length; i++) {
+        const s = stmts[i];
+        // «int a, b; cin >> a >> b;» — объявление без значения перед cin не нужно
+        if (s.k === 'decl' && s.decls.every(d => !d.init && !d.ctor && !d.dims.length)) {
+          let j = i + 1;
+          while (j < stmts.length && stmts[j].k === 'comment') j++;
+          const nx = stmts[j];
+          let chain = nx && nx.k === 'expr' ? flattenShift(nx.e, '>>') : null;
+          if (!chain && nx && nx.k === 'expr' && nx.e.k === 'call' && nx.e.fn.k === 'name' && nx.e.fn.v === 'getline' && nx.e.args.length === 2) chain = [{ k: 'name', v: 'cin' }, nx.e.args[1]];
+          if (chain && chain[0].k === 'name' && chain[0].v === 'cin') {
+            const names = chain.slice(1).filter(x => x.k === 'name').map(x => x.v);
+            if (s.decls.every(d => names.includes(d.name))) {
+              for (const d of s.decls) env.vars[d.name] = typeName(s.ty);
+              continue;
+            }
+          }
+        }
+        // комментарий в конце строки кода — оставляем на той же строке
+        if (s.k === 'comment' && s.own === false && out.length && out[out.length - 1].trim() && !s.v.includes('\n')) { out[out.length - 1] += '  # ' + s.v; continue; }
+        out.push(...this.stmt(s, env, ind, loop));
+      }
+      // убираем пустые строки в начале/конце блока
+      while (out.length && out[0].trim() === '') out.shift();
+      if (!out.some(l => l.trim() && !l.trim().startsWith('#'))) out.push(ind + 'pass');
+      return out;
+    }
+    asList(s) { return s.k === 'block' ? s.body : [s]; }
+
+    stmt(s, env, ind, loop) {
+      try { return this.stmtInner(s, env, ind, loop); }
+      catch (err) {
+        if (!(err instanceof SyntaxError)) throw err;
+        this.warn(s.line, err.message.replace(/^строка \d+: /, ''));
+        return [ind + '# TODO (не сконвертировано, строка ' + s.line + ')'];
+      }
+    }
+    stmtInner(s, env, ind, loop) {
+      const L = s.line;
+      const E = (x, minP = 0) => this.wrap(this.ex(x, env, L), minP);
+      switch (s.k) {
+        case 'comment': return s.v.split('\n').map(l => ind + '# ' + l);
+        case 'empty': return [];
+        case 'error':
+          this.warn(L, s.msg.replace(/^строка \d+: /, ''));
+          return [ind + '# TODO (не сконвертировано): ' + (s.src || '')];
+        case 'block': return this.body(s.body, env, ind, loop).filter(l => l.trim() !== 'pass');
+        case 'decl': return this.decl(s, env, ind);
+        case 'return': {
+          if (env.isMain) {
+            if (!s.e || (s.e.k === 'num' && s.e.v === '0')) return env.topLevel ? [] : [ind + 'return'];
+            this.imports.add('sys');
+            return [ind + 'sys.exit(' + E(s.e) + ')'];
+          }
+          return [ind + 'return' + (s.e ? ' ' + E(s.e) : '')];
+        }
+        case 'break': return [ind + 'break'];
+        case 'continue': return [...(loop && loop.step ? loop.step.map(l => ind + l) : []), ind + 'continue'];
+        case 'if': {
+          const out = [];
+          let cur = s, first = true;
+          while (cur) {
+            out.push(ind + (first ? 'if ' : 'elif ') + this.cond(cur.c, env, L) + ':');
+            out.push(...this.body(this.asList(cur.then), env, ind + '    ', loop));
+            first = false;
+            if (cur.els && cur.els.k === 'if') { cur = cur.els; continue; }
+            if (cur.els) { out.push(ind + 'else:'); out.push(...this.body(this.asList(cur.els), env, ind + '    ', loop)); }
+            cur = null;
+          }
+          return out;
+        }
+        case 'while': {
+          // while (k--) { ... }
+          if (s.c.k === 'postinc' && s.c.x.k === 'name') {
+            const v = s.c.x.v;
+            return [ind + 'while ' + v + ' != 0:', ind + '    ' + v + (s.c.op === '++' ? ' += 1' : ' -= 1'), ...this.body(this.asList(s.body), env, ind + '    ', null).filter(l => l.trim() !== 'pass')];
+          }
+          const c = s.c.k === 'num' && s.c.v === '1' ? 'True' : this.cond(s.c, env, L);
+          return [ind + 'while ' + c + ':', ...this.body(this.asList(s.body), env, ind + '    ', null)];
+        }
+        case 'dowhile': {
+          const lines = this.body(this.asList(s.body), env, ind + '    ', { step: null });
+          if (JSON.stringify(s.body).includes('"k":"continue"')) this.warn(L, 'continue в do-while: в Python цикл пропустит проверку условия');
+          return [ind + 'while True:', ...lines.filter(l => l.trim() !== 'pass'), ind + '    if not (' + this.cond(s.c, env, L) + '):', ind + '        break'];
+        }
+        case 'foreach': {
+          const t = typeName(s.ty);
+          const ct = this.typeOf(s.coll, env);
+          env.vars[s.name] = t === 'auto' ? elemOf(ct) : t;
+          if (s.ty.ref && !s.ty.quals.includes('const') && JSON.stringify(s.body).includes('"k":"assign"')) this.warn(L, 'изменение элементов через ссылку (auto&) в Python не работает');
+          return [ind + 'for ' + s.name + ' in ' + E(s.coll, P.tern) + ':', ...this.body(this.asList(s.body), env, ind + '    ', null)];
+        }
+        case 'for': return this.forLoop(s, env, ind);
+        case 'switch': return this.switchStmt(s, env, ind, loop);
+        case 'expr': return this.exprStmt(s.e, env, ind, L);
+      }
+      throw new SyntaxError('строка ' + L + ': неподдерживаемая инструкция');
+    }
+    cond(c, env, L) { return this.ex(c, env, L).c; }
+
+    decl(s, env, ind) {
+      const out = [];
+      const t = typeName(s.ty);
+      if (t.startsWith('other:')) throw new SyntaxError('строка ' + s.line + ': тип «' + t.slice(6) + '» не поддерживается');
+      for (const d of s.decls) {
+        let vt = t;
+        let val;
+        if (d.dims.length) {
+          // int a[10]; int a[] = {1,2}; int m[3][4];
+          vt = 'list<' + t + '>';
+          const emptyInit = d.init && d.init.k === 'list' && (d.init.items.length === 0 || (d.init.items.length === 1 && d.init.items[0].k === 'num' && d.init.items[0].v === '0'));
+          if (d.init && !emptyInit) val = this.ex(d.init, env, s.line).c;
+          else {
+            val = this.zero(t);
+            for (let i = d.dims.length - 1; i >= 0; i--) {
+              const dim = d.dims[i] ? this.wrap(this.ex(d.dims[i], env, s.line), P.mul + 1) : '0';
+              val = i === d.dims.length - 1 ? '[' + val + '] * ' + dim : '[' + val + ' for _ in range(' + dim + ')]';
+            }
+          }
+          if (d.dims.length > 1) for (let i = 1; i < d.dims.length; i++) vt = 'list<' + vt + '>';
+        } else if (d.init) {
+          if (d.init.k === 'list' && !isList(t)) val = d.init.items.length ? this.ex(d.init.items[0], env, s.line).c : this.zero(t);
+          else val = this.ex(d.init, env, s.line).c;
+          if (t === 'auto') vt = this.typeOf(d.init, env);
+          if (t === 'int' && this.typeOf(d.init, env) === 'float') val = 'int(' + val + ')';
+          if (t === 'float' && d.init.k === 'num' && !d.init.isFloat) val = d.init.v + '.0';
+          if (t === 'str' && d.init.k === 'char') { }
+        } else if (d.ctor) {
+          val = this.ex({ k: 'construct', ty: s.ty, args: d.ctor }, env, s.line).c;
+        } else {
+          val = this.zero(t);
+        }
+        if (isList(vt) && d.ctor && d.ctor.length === 2 && d.ctor[1].k === 'construct') {
+          // vector<vector<int>> m(n, vector<int>(k, 0)) → списки без общих ссылок
+          const inner = this.ex(d.ctor[1], env, s.line).c;
+          val = '[' + inner + ' for _ in range(' + this.ex(d.ctor[0], env, s.line).c + ')]';
+        }
+        env.vars[d.name] = vt;
+        out.push(ind + d.name + ' = ' + val);
+      }
+      return out;
+    }
+
+    exprStmt(e, env, ind, L) {
+      const E = (x, minP = 0) => this.wrap(this.ex(x, env, L), minP);
+      // cout << ...
+      const chain = flattenShift(e, '<<');
+      if (chain && chain[0].k === 'name' && (chain[0].v === 'cout' || chain[0].v === 'cerr')) return this.cout(chain.slice(1), env, ind, L, chain[0].v === 'cerr');
+      const inChain = flattenShift(e, '>>');
+      if (inChain && inChain[0].k === 'name' && inChain[0].v === 'cin') return this.cin(inChain.slice(1), env, ind, L);
+      if (e.k === 'postinc' || e.k === 'preinc') {
+        if (e.x.k === 'name' && !(e.x.v in env.vars) && e.x.v in this.globals && env.usedGlobals) env.usedGlobals.add(e.x.v);
+        return [ind + E(e.x) + (e.op === '++' ? ' += 1' : ' -= 1')];
+      }
+      if (e.k === 'assign') {
+        // цепочка a = b = 0
+        if (e.op === '=' && e.r.k === 'assign' && e.r.op === '=') {
+          const targets = [];
+          let cur = e;
+          while (cur.k === 'assign' && cur.op === '=') { targets.push(E(cur.l)); cur = cur.r; }
+          return [ind + targets.join(' = ') + ' = ' + E(cur)];
+        }
+        const lt = this.typeOf(e.l, env), rt = this.typeOf(e.r, env);
+        let op = e.op;
+        if (op === '/=' && lt !== 'float' && rt !== 'float') op = '//=';
+        let r = e.r.k === 'list' && !isList(lt) ? this.ex(e.r.items[0], env, L).c : E(e.r);
+        if (op === '=' && lt === 'int' && rt === 'float') r = 'int(' + r + ')';
+        if ((op === '+=' || op === '-=') && lt === 'char') return [ind + E(e.l) + ' = chr(ord(' + E(e.l) + ') ' + op[0] + ' ' + (rt === 'char' ? 'ord(' + r + ')' : r) + ')'];
+        if (op === '%=' && (lt === 'float' || rt === 'float')) { this.imports.add('math'); return [ind + E(e.l) + ' = math.fmod(' + E(e.l) + ', ' + r + ')']; }
+        if (e.l.k === 'index' && this.typeOf(e.l.obj, env) === 'str') this.warn(L, 'строки в Python неизменяемы: s[i] = ... вызовет ошибку');
+        if (e.l.k === 'name' && !(e.l.v in env.vars) && e.l.v in this.globals && env.usedGlobals) env.usedGlobals.add(e.l.v);
+        return [ind + E(e.l) + ' ' + op + ' ' + r];
+      }
+      if (e.k === 'call' && e.fn.k === 'name') {
+        const n = e.fn.v;
+        if (n === 'swap') return [ind + E(e.args[0]) + ', ' + E(e.args[1]) + ' = ' + E(e.args[1]) + ', ' + E(e.args[0])];
+        if ((n === 'sort' || n === 'reverse') && e.args.length >= 2) {
+          const a = e.args[0];
+          if (a.k === 'call' && a.fn.k === 'member' && (a.fn.name === 'begin' || a.fn.name === 'rbegin')) {
+            const o = E(a.fn.obj, P.post);
+            if (n === 'reverse') return [ind + o + '.reverse()'];
+            const desc = a.fn.name === 'rbegin' || (e.args[2] && /greater/.test(JSON.stringify(e.args[2])));
+            return [ind + o + '.sort(' + (desc ? 'reverse=True' : '') + ')'];
+          }
+        }
+        if (n === 'getline' && e.args[0] && e.args[0].k === 'name' && e.args[0].v === 'cin') return [ind + E(e.args[1]) + ' = input()'];
+      }
+      if (e.k === 'comma') return [...this.exprStmt(e.l, env, ind, L), ...this.exprStmt(e.r, env, ind, L)];
+      return [ind + E(e)];
+    }
+
+    cout(parts, env, ind, L, isErr) {
+      // разбиваем на «строки вывода» по endl / "\n"
+      const lines = [];
+      let cur = [];
+      for (const p of parts) {
+        if (p.k === 'name' && (p.v === 'endl')) { cur.push({ nl: true }); lines.push(cur); cur = []; continue; }
+        if (p.k === 'name' && p.v === 'fixed') { this.fmt.fixed = true; continue; }
+        if (p.k === 'call' && p.fn.k === 'name' && p.fn.v === 'setprecision') { this.fmt.prec = this.ex(p.args[0], env, L).c; continue; }
+        if (p.k === 'name' && ['flush', 'boolalpha', 'noboolalpha'].includes(p.v)) continue;
+        if ((p.k === 'str' || p.k === 'char') && p.v.includes('\n')) {
+          const segs = p.v.split('\n');
+          segs.forEach((sg, i) => {
+            if (sg) cur.push({ e: { k: 'str', v: sg } });
+            if (i < segs.length - 1) { cur.push({ nl: true }); lines.push(cur); cur = []; }
+          });
+          continue;
+        }
+        cur.push({ e: p });
+      }
+      if (cur.length) lines.push(cur);
+      const out = [];
+      for (const ln of lines) {
+        const nl = ln.length && ln[ln.length - 1].nl;
+        const items = ln.filter(x => !x.nl).map(x => x.e);
+        out.push(ind + this.printCall(items, nl, env, L, isErr));
+      }
+      return out;
+    }
+    printCall(items, nl, env, L, isErr) {
+      const extra = [];
+      if (!nl) extra.push('end=""');
+      if (isErr) { this.imports.add('sys'); extra.push('file=sys.stderr'); }
+      if (!items.length) return 'print(' + extra.join(', ') + ')';
+      const fmtF = this.fmt.fixed && this.fmt.prec;
+      // f-строка, если есть и текст, и выражения
+      const hasLit = items.some(i => i.k === 'str' || i.k === 'char');
+      const exprs = items.filter(i => i.k !== 'str' && i.k !== 'char');
+      const codeOf = x => {
+        const t = this.typeOf(x, env);
+        let c = this.ex(x, env, L).c;
+        if (t === 'bool') c = 'int(' + c + ')';
+        return { c, t };
+      };
+      if (items.length === 1 && !hasLit) {
+        const { c, t } = codeOf(items[0]);
+        if (fmtF && (t === 'float' || t === 'auto')) return 'print(f"{' + c + ':.' + this.fmt.prec + 'f}"' + (extra.length ? ', ' + extra.join(', ') : '') + ')';
+        if (t === 'float' && !fmtF) this.warn(L, 'вещественные числа Python выводит иначе (например, 5.0 вместо 5)');
+        return 'print(' + c + (extra.length ? ', ' + extra.join(', ') : '') + ')';
+      }
+      if (hasLit && exprs.length) {
+        let s = '', ok = true;
+        for (const it of items) {
+          if (it.k === 'str' || it.k === 'char') s += pyStr(it.v).slice(1, -1).replace(/\{/g, '{{').replace(/\}/g, '}}');
+          else {
+            const { c, t } = codeOf(it);
+            if (/["\\{}]/.test(c) || c.includes('\n')) ok = false;
+            if (t === 'float' && !fmtF) this.warn(L, 'вещественные числа Python выводит иначе (например, 5.0 вместо 5)');
+            s += '{' + c + (fmtF && (t === 'float' || t === 'auto') ? ':.' + this.fmt.prec + 'f' : '') + '}';
+          }
+        }
+        if (ok) return 'print(f"' + s + '"' + (extra.length ? ', ' + extra.join(', ') : '') + ')';
+      }
+      const args = items.map(it => (it.k === 'str' || it.k === 'char') ? pyStr(it.v) : codeOf(it).c);
+      if (args.length > 1) extra.unshift('sep=""');
+      return 'print(' + args.join(', ') + (extra.length ? ', ' + extra.join(', ') : '') + ')';
+    }
+    cin(targets, env, ind, L) {
+      const conv = (t, c) => t === 'int' ? 'int(' + c + ')' : t === 'float' ? 'float(' + c + ')' : c;
+      const ts = targets.map(x => ({ c: this.ex(x, env, L).c, t: this.typeOf(x, env) }));
+      if (ts.some(x => x.t === 'auto')) this.warn(L, 'тип переменной для cin неизвестен — читается строка');
+      if (ts.length === 1) {
+        const x = ts[0];
+        if (x.t === 'char') return [ind + x.c + ' = input()[0]'];
+        if (x.t === 'str') { this.warn(L, 'cin >> строка читает одно слово, input() — всю строку'); return [ind + x.c + ' = input().split()[0]']; }
+        return [ind + x.c + ' = ' + conv(x.t, 'input()')];
+      }
+      this.warn(L, 'cin >> a >> b: значения ожидаются в одной строке через пробел');
+      const same = ts.every(x => x.t === ts[0].t);
+      if (same && (ts[0].t === 'int' || ts[0].t === 'float')) return [ind + ts.map(x => x.c).join(', ') + ' = map(' + ts[0].t + ', input().split())'];
+      if (same && ts[0].t === 'str') return [ind + ts.map(x => x.c).join(', ') + ' = input().split()'];
+      const v = '_parts' + (this.tmp ? this.tmp : '');
+      this.tmp++;
+      return [ind + v + ' = input().split()', ...ts.map((x, i) => ind + x.c + ' = ' + conv(x.t, v + '[' + i + ']'))];
+    }
+
+    forLoop(s, env, ind) {
+      const L = s.line;
+      const E = (x, minP = 0) => this.wrap(this.ex(x, env, L), minP);
+      // пробуем распознать for (int i = a; i < b; i++)
+      const r = this.rangeFor(s, env);
+      if (r) return [ind + 'for ' + r.v + ' in ' + r.range + ':', ...this.body(this.asList(s.body), env, ind + '    ', null)];
+      // общий случай → while
+      const out = [];
+      if (s.init) out.push(...(s.init.k === 'decl' ? this.decl(s.init, env, ind) : this.exprStmt(s.init.e, env, ind, L)));
+      const stepLines = s.step ? this.exprStmt(s.step, env, '', L) : [];
+      out.push(ind + 'while ' + (s.c ? this.cond(s.c, env, L) : 'True') + ':');
+      const body = this.body(this.asList(s.body), env, ind + '    ', { step: stepLines }).filter(l => l.trim() !== 'pass');
+      out.push(...body, ...stepLines.map(l => ind + '    ' + l));
+      if (!body.length && !stepLines.length) out.push(ind + '    pass');
+      return out;
+    }
+    rangeFor(s, env) {
+      const L = s.line;
+      let v, start;
+      if (s.init && s.init.k === 'decl' && s.init.decls.length === 1 && s.init.decls[0].init && typeName(s.init.ty) === 'int') { v = s.init.decls[0].name; start = s.init.decls[0].init; }
+      else if (s.init && s.init.k === 'expr' && s.init.e.k === 'assign' && s.init.e.op === '=' && s.init.e.l.k === 'name') { v = s.init.e.l.v; start = s.init.e.r; }
+      else return null;
+      if (!s.c || s.c.k !== 'bin' || !['<', '<=', '>', '>=', '!='].includes(s.c.op)) return null;
+      let cop = s.c.op, bound;
+      if (s.c.l.k === 'name' && s.c.l.v === v) bound = s.c.r;
+      else if (s.c.r.k === 'name' && s.c.r.v === v) { bound = s.c.l; cop = { '<': '>', '>': '<', '<=': '>=', '>=': '<=', '!=': '!=' }[cop]; }
+      else return null;
+      // шаг
+      let step = null;
+      const st = s.step;
+      if (!st) return null;
+      if ((st.k === 'postinc' || st.k === 'preinc') && st.x.k === 'name' && st.x.v === v) step = st.op === '++' ? 1 : -1;
+      else if (st.k === 'assign' && st.l.k === 'name' && st.l.v === v && (st.op === '+=' || st.op === '-=') && st.r.k === 'num' && !st.r.isFloat) step = (st.op === '+=' ? 1 : -1) * Number(st.r.v);
+      else if (st.k === 'assign' && st.op === '=' && st.l.k === 'name' && st.l.v === v && st.r.k === 'bin' && st.r.l.k === 'name' && st.r.l.v === v && (st.r.op === '+' || st.r.op === '-') && st.r.r.k === 'num') step = (st.r.op === '+' ? 1 : -1) * Number(st.r.r.v);
+      else return null;
+      if (!step) return null;
+      if (cop === '!=') { if (Math.abs(step) !== 1) return null; cop = step > 0 ? '<' : '>'; }
+      if ((step > 0 && (cop === '>' || cop === '>=')) || (step < 0 && (cop === '<' || cop === '<='))) return null;
+      // тело не должно менять счётчик или границу
+      const bodyJ = JSON.stringify(s.body);
+      const modifies = name => new RegExp('"k":"(assign|postinc|preinc)","op":"[^"]*",("l"|"x"):\\{"k":"name","v":"' + name + '"\\}').test(bodyJ);
+      if (modifies(v)) return null;
+      const boundNames = [];
+      JSON.stringify(bound).replace(/"k":"name","v":"(\w+)"/g, (_, n) => boundNames.push(n));
+      if (boundNames.some(modifies)) return null;
+      if (/"name":"(push_back|pop_back|erase|insert|clear|emplace_back)"/.test(bodyJ) && /"name":"(size|length)"/.test(JSON.stringify(bound))) return null;
+      env.vars[v] = 'int';
+      const E = (x, minP = 0) => this.wrap(this.ex(x, env, L), minP);
+      let a = E(start), b;
+      // границы включительно: <= b → b + 1
+      const adj = (bnd, d) => {
+        if (bnd.k === 'num' && !bnd.isFloat) return String(Number(bnd.v) + d);
+        if (bnd.k === 'bin' && (bnd.op === '-' || bnd.op === '+') && bnd.r.k === 'num' && Number(bnd.r.v) === Math.abs(d) && (bnd.op === '-') === (d > 0)) return E(bnd.l);
+        return E(bnd, P.add) + (d > 0 ? ' + ' : ' - ') + Math.abs(d);
+      };
+      if (cop === '<' || cop === '>') b = E(bound);
+      else if (cop === '<=') b = adj(bound, 1);
+      else b = adj(bound, -1);
+      if (this.typeOf(bound, env) === 'float') return null;
+      let range;
+      if (step === 1) range = a === '0' ? 'range(' + b + ')' : 'range(' + a + ', ' + b + ')';
+      else range = 'range(' + a + ', ' + b + ', ' + step + ')';
+      return { v, range };
+    }
+    switchStmt(s, env, ind, loop) {
+      const out = [];
+      const subj = this.ex(s.subj, env, s.line).c;
+      let first = true;
+      const simpleSubj = /^\w+$/.test(subj);
+      let sv = subj;
+      if (!simpleSubj) { sv = '_sw'; out.push(ind + sv + ' = ' + subj); }
+      const defaults = s.cases.filter(c => c.isDefault);
+      const cases = s.cases.filter(c => !c.isDefault);
+      for (const c of [...cases, ...defaults]) {
+        let body = c.body.slice();
+        const last = body[body.length - 1];
+        if (last && last.k === 'break') body = body.slice(0, -1);
+        else if (last && last.k !== 'return' && c !== s.cases[s.cases.length - 1]) this.warn(c.body[0] ? c.body[0].line : s.line, 'case без break (проваливание) не поддерживается');
+        if (body.some(b => b.k === 'break')) this.warn(s.line, 'break в середине case пропущен');
+        if (c.isDefault) {
+          if (first) { out.push(...this.body(body, env, ind, loop)); continue; }
+          out.push(ind + 'else:');
+        } else {
+          const conds = c.vals.map(v => sv + ' == ' + this.ex(v, env, s.line).c);
+          out.push(ind + (first ? 'if ' : 'elif ') + conds.join(' or ') + ':');
+        }
+        first = false;
+        out.push(...this.body(body, env, ind + '    ', loop));
+      }
+      return out;
+    }
+
+    func(f) {
+      const env = { vars: {}, isMain: f.name === 'main', usedGlobals: new Set(), topLevel: false };
+      const params = f.params.map(p => {
+        env.vars[p.name] = typeName(p.ty);
+        let s = p.name;
+        if (p.def) s += '=' + this.ex(p.def, env, f.line).c;
+        if (p.ty.ref && !p.ty.quals.includes('const') && !isList(typeName(p.ty))) this.warn(f.line, 'параметр «' + p.name + '» передаётся по ссылке (&) — в Python изменения не вернутся в вызывающий код');
+        return s;
+      });
+      const name = f.name === 'main' ? 'main' : f.name;
+      let stmts = f.body;
+      const last = stmts[stmts.length - 1];
+      if (env.isMain && last && last.k === 'return' && (!last.e || (last.e.k === 'num' && last.e.v === '0'))) stmts = stmts.slice(0, -1);
+      if (typeName(f.ret) === 'void' && last && last.k === 'return' && !last.e) stmts = stmts.slice(0, -1);
+      const body = this.body(stmts, env, '    ', null);
+      // global для изменяемых глобальных переменных
+      const assignedGlobals = [...env.usedGlobals].filter(g => !(g in Object.fromEntries(f.params.map(p => [p.name, 1]))));
+      const lines = ['def ' + name + '(' + params.join(', ') + '):'];
+      if (assignedGlobals.length) lines.push('    global ' + assignedGlobals.join(', '));
+      lines.push(...body);
+      return lines;
+    }
+  }
+
+  function flattenShift(e, op) {
+    const parts = [];
+    let cur = e;
+    while (cur.k === 'bin' && cur.op === op) { parts.unshift(cur.r); cur = cur.l; }
+    if (!parts.length) return null;
+    parts.unshift(cur);
+    return parts;
+  }
+
+  // ровно две пустые строки перед def / if __name__ (вместе с комментариями над ними)
+  function pep8Blank(text) {
+    const lines = text.split('\n');
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      const isTop = /^(def |if __name__)/.test(l);
+      const startsBlock = isTop || (/^#/.test(l) && (() => { let j = i; while (j < lines.length && /^#/.test(lines[j])) j++; return /^(def |if __name__)/.test(lines[j] || ''); })());
+      if (startsBlock) {
+        const mark = out.length;
+        while (out.length && out[out.length - 1].trim() === '') out.pop();
+        const afterComment = isTop && out.length && /^#/.test(out[out.length - 1]) && mark - out.length <= 1;
+        if (out.length && !afterComment) out.push('', '');
+      }
+      if (l.trim() === '' && out.length && out[out.length - 1].trim() === '' && out.length > 1 && out[out.length - 2].trim() === '') continue;
+      out.push(l);
+    }
+    return out.join('\n').replace(/^\n+/, '').trimEnd() + '\n';
+  }
+
+  function convert(code) {
+    const gen = new Gen();
+    let items;
+    try {
+      items = new Parser(tokenize(code)).program();
+    } catch (e) {
+      if (e instanceof SyntaxError) return { code: '# Не удалось разобрать код: ' + e.message + '\n', warnings: [e.message] };
+      throw e;
+    }
+    const out = [];
+    // типы возвращаемых значений и глобальных переменных заранее
+    for (const it of items) if (it.k === 'func') gen.fnRet[it.name] = typeName(it.ret);
+    const globalEnv = { vars: gen.globals, isMain: false, usedGlobals: new Set(), topLevel: true };
+    const bodyParts = [];
+    let hasMain = false;
+    for (const it of items) {
+      if (it.k === 'comment') { bodyParts.push(['# ' + it.v.split('\n').join('\n# ')]); continue; }
+      if (it.k === 'unsupported') { gen.warn(it.line, '«' + it.what + '» не поддерживается и пропущен'); bodyParts.push(['# TODO (не сконвертировано): ' + it.what + ' (строка ' + it.line + ')']); continue; }
+      if (it.k === 'error') { gen.warn(it.line, it.msg.replace(/^строка \d+: /, '')); bodyParts.push(['# TODO (не сконвертировано, строка ' + it.line + ')']); continue; }
+      if (it.k === 'decl') { bodyParts.push(gen.stmt(it, globalEnv, '', null)); continue; }
+      if (it.k === 'topstmt') { bodyParts.push(gen.stmt(it.s, globalEnv, '', null)); continue; }
+      if (it.k === 'func') {
+        if (it.name === 'main') hasMain = true;
+        bodyParts.push(['', ...gen.func(it), '']);
+      }
+    }
+    for (const p of bodyParts) out.push(...p);
+    if (hasMain) out.push('', 'if __name__ == "__main__":', '    main()');
+    const header = [];
+    if (gen.imports.size) header.push(...[...gen.imports].sort().map(m => 'import ' + m), '');
+    let text = [...header, ...out].join('\n').replace(/\n{3,}/g, '\n\n\n').replace(/^\n+/, '').trimEnd() + '\n';
+    // две пустые строки между функциями (PEP 8)
+    text = pep8Blank(text);
+    return { code: text, warnings: gen.warnings };
+  }
+
+  return { convert };
+})();
+
+
+
+let currentDirection = 'py2cpp';
 function setDirection(dir) {
     currentDirection = dir;
-    const arrowRight = document.getElementById('arrowRight');
-    const arrowLeft = document.getElementById('arrowLeft');
+    const row = document.querySelector('.converter-row');
     const pyTitle = document.getElementById('pyTitle');
     const cppTitle = document.getElementById('cppTitle');
     const pyInput = document.getElementById('pythonInput');
     const cppOutput = document.getElementById('cppOutput');
-
-    if (dir === 'py2cpp') {
-        arrowRight.classList.add('active');
-        arrowLeft.classList.remove('active');
-        pyTitle.textContent = 'Python (input.py)';
-        cppTitle.textContent = 'C++ (main.cpp)';
-        pyInput.readOnly = false;
-        cppOutput.readOnly = true;
-    } else {
-        arrowLeft.classList.add('active');
-        arrowRight.classList.remove('active');
-        pyTitle.textContent = 'Python (output.py)';
-        cppTitle.textContent = 'C++ (input.cpp)';
-        pyInput.readOnly = true;
-        cppOutput.readOnly = false;
-    }
+    const toCpp = dir === 'py2cpp';
+    // поле ввода всегда слева, результат — справа
+    row.classList.toggle('reversed', !toCpp);
+    document.getElementById('directionText').textContent = toCpp ? 'Python → C++' : 'C++ → Python';
+    pyTitle.textContent = toCpp ? 'Python (input.py)' : 'Python (output.py)';
+    cppTitle.textContent = toCpp ? 'C++ (main.cpp)' : 'C++ (input.cpp)';
+    pyInput.readOnly = !toCpp;
+    cppOutput.readOnly = toCpp;
+    pyInput.placeholder = toCpp
+        ? "# Введите код Python здесь...\ndef hello():\n    print('Hello, World!')\n\nhello()"
+        : '# Результат конвертации появится здесь...';
+    cppOutput.placeholder = toCpp
+        ? '// Результат конвертации появится здесь...'
+        : '// Введите код C++ здесь...\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}';
+    showWarnings([]);
+    (toCpp ? pyInput : cppOutput).focus();
 }
-
+function toggleDirection() {
+    setDirection(currentDirection === 'py2cpp' ? 'cpp2py' : 'py2cpp');
+}
+function showWarnings(list) {
+    const box = document.getElementById('warnings');
+    const ul = document.getElementById('warningsList');
+    ul.innerHTML = '';
+    for (const w of list) {
+        const li = document.createElement('li');
+        li.textContent = w;
+        ul.appendChild(li);
+    }
+    document.getElementById('warningsTitle').textContent = 'Предупреждения (' + list.length + ')';
+    box.hidden = list.length === 0;
+}
+function plural(n, one, few, many) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+}
 function convert() {
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
-
+    const toCpp = currentDirection === 'py2cpp';
+    const src = document.getElementById(toCpp ? 'pythonInput' : 'cppOutput').value;
+    if (!src.trim()) {
+        showToast(toCpp ? 'Введите код Python для конвертации' : 'Введите код C++ для конвертации');
+        statusText.textContent = 'Нет кода для конвертации';
+        return;
+    }
     statusDot.className = 'status-dot processing';
-    statusText.textContent = 'Конвертация...';
-
-    setTimeout(() => {
-        try {
-            if (currentDirection === 'py2cpp') {
-                const pyCode = document.getElementById('pythonInput').value.trim();
-                if (!pyCode) {
-                    showToast('Введите код Python для конвертации');
-                    statusDot.className = 'status-dot ready';
-                    statusText.textContent = 'Ошибка';
-                    return;
-                }
-                const cppCode = pyToCpp(pyCode);
-                document.getElementById('cppOutput').value = cppCode;
-                showToast('Конвертация Python → C++ завершена');
-            } else {
-                const cppCode = document.getElementById('cppOutput').value.trim();
-                if (!cppCode) {
-                    showToast('Введите код C++ для конвертации');
-                    statusDot.className = 'status-dot ready';
-                    statusText.textContent = 'Ошибка';
-                    return;
-                }
-                const pyCode = cppToPy(cppCode);
-                document.getElementById('pythonInput').value = pyCode;
-                showToast('Конвертация C++ → Python завершена');
-            }
-        } catch (e) {
-            showToast('Ошибка конвертации: ' + e.message);
-        }
-
-        statusDot.className = 'status-dot ready';
-        statusText.textContent = 'Готов к работе';
-    }, 300);
+    try {
+        const result = toCpp ? PyToCpp.convert(src) : CppToPy.convert(src);
+        document.getElementById(toCpp ? 'cppOutput' : 'pythonInput').value = result.code;
+        showWarnings(result.warnings);
+        const n = result.warnings.length;
+        statusText.textContent = n
+            ? 'Готово, ' + n + ' ' + plural(n, 'предупреждение', 'предупреждения', 'предупреждений') + ' — проверьте отмеченные строки'
+            : 'Готово, без предупреждений';
+        showToast(toCpp ? 'Конвертация Python → C++ завершена' : 'Конвертация C++ → Python завершена');
+    } catch (e) {
+        console.error(e);
+        statusText.textContent = 'Ошибка конвертации';
+        showToast('Ошибка конвертации: ' + e.message);
+    }
+    statusDot.className = 'status-dot ready';
 }
-
-function pyToCpp(code) {
-    let cpp = '#include <iostream>\n#include <string>\n#include <vector>\n#include <cmath>\nusing namespace std;\n\n';
-
-    const lines = code.split('\n');
-    let inMain = false;
-    let braceDepth = 0;
-
-    for (let line of lines) {
-        const trimmed = line.trim();
-
-        if (trimmed === '') {
-            cpp += '\n';
-            continue;
-        }
-
-        if (trimmed.startsWith('#')) {
-            cpp += '    // ' + trimmed.substring(1).trim() + '\n';
-            continue;
-        }
-
-        const defMatch = trimmed.match(/^def\s+(\w+)\s*\(([^)]*)\)\s*:/);
-        if (defMatch) {
-            const funcName = defMatch[1];
-            const params = defMatch[2] ? defMatch[2].split(',').map(p => {
-                const pname = p.trim().split(':')[0].split('=')[0].trim();
-                return 'int ' + pname;
-            }).join(', ') : '';
-            if (funcName === 'main') {
-                cpp += 'int main(' + params + ') {\n';
-                inMain = true;
-            } else {
-                cpp += 'void ' + funcName + '(' + params + ') {\n';
-            }
-            braceDepth++;
-            continue;
-        }
-
-        const printMatch = trimmed.match(/^print\s*\((.+)\)\s*$/);
-        if (printMatch) {
-            let arg = printMatch[1];
-            if (arg.startsWith("f'") || arg.startsWith('f"')) {
-                const quote = arg[1];
-                const inner = arg.slice(2, -1);
-                const parts = inner.split(/\{(\w+)\}/);
-                let expr = '';
-                for (let i = 0; i < parts.length; i++) {
-                    if (i % 2 === 0) {
-                        expr += '"' + parts[i] + '"';
-                    } else {
-                        expr += ' << ' + parts[i] + ' << ';
-                    }
-                }
-                expr = expr.replace(/" << "/g, '');
-                cpp += '    cout << ' + expr + ' << endl;\n';
-            } else if (arg.startsWith("'") || arg.startsWith('"')) {
-                cpp += '    cout << ' + arg + ' << endl;\n';
-            } else {
-                cpp += '    cout << ' + arg + ' << endl;\n';
-            }
-            continue;
-        }
-
-        const intInputMatch = trimmed.match(/^(\w+)\s*=\s*int\s*\(\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\)\s*$/);
-        if (intInputMatch) {
-            const varName = intInputMatch[1];
-            const prompt = intInputMatch[2] || '';
-            if (prompt) cpp += '    cout << "' + prompt + '";\n';
-            cpp += '    int ' + varName + ';\n    cin >> ' + varName + ';\n';
-            continue;
-        }
-
-        const floatInputMatch = trimmed.match(/^(\w+)\s*=\s*float\s*\(\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\)\s*$/);
-        if (floatInputMatch) {
-            const varName = floatInputMatch[1];
-            const prompt = floatInputMatch[2] || '';
-            if (prompt) cpp += '    cout << "' + prompt + '";\n';
-            cpp += '    double ' + varName + ';\n    cin >> ' + varName + ';\n';
-            continue;
-        }
-
-        const inputMatch = trimmed.match(/^(\w+)\s*=\s*input\s*\(\s*(?:["'](.+?)["']\s*)?\)\s*$/);
-        if (inputMatch) {
-            const varName = inputMatch[1];
-            const prompt = inputMatch[2] || '';
-            if (prompt) cpp += '    cout << "' + prompt + '";\n';
-            cpp += '    string ' + varName + ';\n    getline(cin, ' + varName + ');\n';
-            continue;
-        }
-
-        const forMatch = trimmed.match(/^for\s+(\w+)\s+in\s+range\s*\((.+)\)\s*:/);
-        if (forMatch) {
-            const varName = forMatch[1];
-            const rangeArg = forMatch[2];
-            const parts = rangeArg.split(',').map(s => s.trim());
-            let start, end, step;
-            if (parts.length === 1) { start = 0; end = parts[0]; step = 1; }
-            else if (parts.length === 2) { start = parts[0]; end = parts[1]; step = 1; }
-            else { start = parts[0]; end = parts[1]; step = parts[2]; }
-            cpp += '    for (int ' + varName + ' = ' + start + '; ' + varName + ' < ' + end + '; ' + varName + ' += ' + step + ') {\n';
-            braceDepth++;
-            continue;
-        }
-
-        const ifMatch = trimmed.match(/^if\s+(.+)\s*:/);
-        if (ifMatch) {
-            let cond = ifMatch[1]
-                .replace(/ and /g, ' && ')
-                .replace(/ or /g, ' || ')
-                .replace(/ not /g, '!')
-                .replace(/==/g, '==')
-                .replace(/!=/g, '!=');
-            cpp += '    if (' + cond + ') {\n';
-            braceDepth++;
-            continue;
-        }
-
-        const elifMatch = trimmed.match(/^elif\s+(.+)\s*:/);
-        if (elifMatch) {
-            let cond = elifMatch[1]
-                .replace(/ and /g, ' && ')
-                .replace(/ or /g, ' || ')
-                .replace(/ not /g, '!');
-            cpp += '    } else if (' + cond + ') {\n';
-            continue;
-        }
-
-        if (trimmed === 'else:') {
-            cpp += '    } else {\n';
-            braceDepth++;
-            continue;
-        }
-
-        const whileMatch = trimmed.match(/^while\s+(.+)\s*:/);
-        if (whileMatch) {
-            let cond = whileMatch[1]
-                .replace(/ and /g, ' && ')
-                .replace(/ or /g, ' || ')
-                .replace(/ not /g, '!');
-            cpp += '    while (' + cond + ') {\n';
-            braceDepth++;
-            continue;
-        }
-
-        const returnMatch = trimmed.match(/^return\s+(.+)\s*$/);
-        if (returnMatch) {
-            cpp += '    return ' + returnMatch[1] + ';\n';
-            continue;
-        }
-        if (trimmed === 'return') {
-            cpp += '    return;\n';
-            continue;
-        }
-
-        const assignMatch = trimmed.match(/^(\w+)\s*=\s*(.+)\s*$/);
-        if (assignMatch) {
-            const varName = assignMatch[1];
-            const value = assignMatch[2];
-            if (/^\d+$/.test(value)) {
-                cpp += '    int ' + varName + ' = ' + value + ';\n';
-            } else if (/^\d+\.\d+$/.test(value)) {
-                cpp += '    double ' + varName + ' = ' + value + ';\n';
-            } else if (/^["']/.test(value)) {
-                cpp += '    string ' + varName + ' = ' + value + ';\n';
-            } else if (/^\[/.test(value)) {
-                const arr = value.replace(/\[/g, '{').replace(/\]/g, '}');
-                cpp += '    vector<int> ' + varName + ' = ' + arr + ';\n';
-            } else if (/^(True|False)$/.test(value)) {
-                cpp += '    bool ' + varName + ' = ' + (value === 'True' ? 'true' : 'false') + ';\n';
-            } else if (/^(None)$/.test(value)) {
-                cpp += '    // ' + varName + ' = None\n';
-            } else {
-                cpp += '    auto ' + varName + ' = ' + value + ';\n';
-            }
-            continue;
-        }
-
-        const funcCallMatch = trimmed.match(/^(\w+)\s*\(([^)]*)\)\s*$/);
-        if (funcCallMatch) {
-            cpp += '    ' + funcCallMatch[1] + '(' + funcCallMatch[2] + ');\n';
-            continue;
-        }
-
-        const lenMatch = trimmed.match(/^(\w+)\s*=\s*len\s*\((\w+)\)\s*$/);
-        if (lenMatch) {
-            cpp += '    int ' + lenMatch[1] + ' = ' + lenMatch[2] + '.size();\n';
-            continue;
-        }
-
-        const appendMatch = trimmed.match(/^(\w+)\.append\s*\((.+)\)\s*$/);
-        if (appendMatch) {
-            cpp += '    ' + appendMatch[1] + '.push_back(' + appendMatch[2] + ');\n';
-            continue;
-        }
-
-        cpp += '    ' + trimmed + '\n';
-    }
-
-    while (braceDepth > 0) {
-        cpp += '}\n';
-        braceDepth--;
-    }
-
-    if (!inMain && !code.includes('def main')) {
-        const body = cpp.split('\n').slice(5).join('\n');
-        cpp = '#include <iostream>\n#include <string>\n#include <vector>\n#include <cmath>\nusing namespace std;\n\nint main() {\n' + body + '\n    return 0;\n}\n';
-    } else if (!cpp.includes('return 0')) {
-        cpp = cpp.replace(/}\s*$/, '    return 0;\n}\n');
-    }
-
-    return cpp;
-}
-
-function cppToPy(code) {
-    let py = '';
-    const lines = code.split('\n');
-
-    for (let line of lines) {
-        const trimmed = line.trim();
-
-        if (trimmed.startsWith('#include') || trimmed.startsWith('using namespace')) continue;
-        if (trimmed.match(/int\s+main\s*\(/)) continue;
-
-        const funcMatch = trimmed.match(/(?:void|int|double|string|bool|auto)\s+(\w+)\s*\(([^)]*)\)\s*\{?/);
-        if (funcMatch && !trimmed.startsWith('for') && !trimmed.startsWith('if') && !trimmed.startsWith('while')) {
-            const funcName = funcMatch[1];
-            const params = funcMatch[2] ? funcMatch[2].split(',').map(p => p.trim().split(/\s+/).pop()).join(', ') : '';
-            py += 'def ' + funcName + '(' + params + '):\n';
-            continue;
-        }
-
-        const coutMatch = trimmed.match(/cout\s*<<\s*(.+?)\s*<<\s*endl\s*;/);
-        if (coutMatch) {
-            let arg = coutMatch[1];
-            arg = arg.replace(/\s*<<\s*/g, '');
-            arg = arg.replace(/^["']|["']$/g, '');
-            py += '    print("' + arg + '")\n';
-            continue;
-        }
-
-        const coutVarMatch = trimmed.match(/cout\s*<<\s*(\w+)\s*<<\s*endl\s*;/);
-        if (coutVarMatch) {
-            py += '    print(' + coutVarMatch[1] + ')\n';
-            continue;
-        }
-
-        const cinMatch = trimmed.match(/cin\s*>>\s*(\w+)\s*;/);
-        if (cinMatch) {
-            py += '    ' + cinMatch[1] + ' = input()\n';
-            continue;
-        }
-
-        if (trimmed === 'return 0;') continue;
-
-        const varMatch = trimmed.match(/(?:int|double|string|bool|auto|long|float|char)\s+(\w+)\s*=\s*(.+?);/);
-        if (varMatch) {
-            py += '    ' + varMatch[1] + ' = ' + varMatch[2] + '\n';
-            continue;
-        }
-
-        const varDeclMatch = trimmed.match(/(?:int|double|string|bool|auto|long|float|char)\s+(\w+)\s*;/);
-        if (varDeclMatch) {
-            py += '    ' + varDeclMatch[1] + ' = 0\n';
-            continue;
-        }
-
-        const forMatch = trimmed.match(/for\s*\(\s*(?:int\s+)?(\w+)\s*=\s*(\d+)\s*;\s*\w+\s*<\s*(\w+)\s*;\s*\w+\+\+\s*\)\s*\{?/);
-        if (forMatch) {
-            py += '    for ' + forMatch[1] + ' in range(' + forMatch[2] + ', ' + forMatch[3] + '):\n';
-            continue;
-        }
-
-        const ifMatch = trimmed.match(/if\s*\((.+)\)\s*\{?/);
-        if (ifMatch) {
-            let cond = ifMatch[1]
-                .replace(/&&/g, ' and ')
-                .replace(/\|\|/g, ' or ')
-                .replace(/!/g, ' not ');
-            py += '    if ' + cond + ':\n';
-            continue;
-        }
-
-        const elifMatch = trimmed.match(/\}\s*else\s+if\s*\((.+)\)\s*\{?/);
-        if (elifMatch) {
-            let cond = elifMatch[1]
-                .replace(/&&/g, ' and ')
-                .replace(/\|\|/g, ' or ');
-            py += '    elif ' + cond + ':\n';
-            continue;
-        }
-
-        if (trimmed.match(/\}\s*else\s*\{?/)) {
-            py += '    else:\n';
-            continue;
-        }
-
-        const whileMatch = trimmed.match(/while\s*\((.+)\)\s*\{?/);
-        if (whileMatch) {
-            let cond = whileMatch[1]
-                .replace(/&&/g, ' and ')
-                .replace(/\|\|/g, ' or ')
-                .replace(/!/g, ' not ');
-            py += '    while ' + cond + ':\n';
-            continue;
-        }
-
-        const returnMatch = trimmed.match(/return\s+(.+);/);
-        if (returnMatch) {
-            py += '    return ' + returnMatch[1] + '\n';
-            continue;
-        }
-
-        const pushMatch = trimmed.match(/(\w+)\.push_back\s*\((.+)\)\s*;/);
-        if (pushMatch) {
-            py += '    ' + pushMatch[1] + '.append(' + pushMatch[2] + ')\n';
-            continue;
-        }
-
-        const sizeMatch = trimmed.match(/(\w+)\s*=\s*(\w+)\.size\s*\(\)\s*;/);
-        if (sizeMatch) {
-            py += '    ' + sizeMatch[1] + ' = len(' + sizeMatch[2] + ')\n';
-            continue;
-        }
-
-        if (trimmed === '}') continue;
-
-        if (trimmed.startsWith('//')) {
-            py += '    # ' + trimmed.substring(2).trim() + '\n';
-            continue;
-        }
-
-        const callMatch = trimmed.match(/(\w+)\s*\(([^)]*)\)\s*;/);
-        if (callMatch) {
-            py += '    ' + callMatch[1] + '(' + callMatch[2] + ')\n';
-            continue;
-        }
-
-        if (trimmed) {
-            py += '    ' + trimmed.replace(/;$/, '') + '\n';
-        }
-    }
-
-    return py || '# Конвертированный код из C++\n';
-}
-
 function clearAll() {
     document.getElementById('pythonInput').value = '';
     document.getElementById('cppOutput').value = '';
+    showWarnings([]);
+    document.getElementById('statusText').textContent = 'Готов к работе';
     showToast('Очищено');
 }
-
 function copyResult() {
     let text = '';
     if (currentDirection === 'py2cpp') {
@@ -707,7 +3427,6 @@ function copyResult() {
         showToast('Скопировано в буфер обмена');
     });
 }
-
 function downloadFile() {
     let content, filename;
     if (currentDirection === 'py2cpp') {
@@ -727,16 +3446,20 @@ function downloadFile() {
     URL.revokeObjectURL(url);
     showToast('Файл ' + filename + ' скачан');
 }
-
 function showToast(msg) {
     const toast = document.getElementById('toast');
     toast.textContent = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
-
 document.querySelectorAll('textarea').forEach(ta => {
     ta.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            convert();
+            return;
+        }
+        if (this.readOnly) return;
         if (e.key === 'Tab') {
             e.preventDefault();
             const start = this.selectionStart;
@@ -747,6 +3470,5 @@ document.querySelectorAll('textarea').forEach(ta => {
     });
 });
 </script>
-
 </body>
 </html>

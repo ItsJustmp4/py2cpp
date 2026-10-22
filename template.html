@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Онлайн-конвертер кода Python ↔ C++ прямо в браузере: функции, циклы, списки, строки, ввод и вывод.">
+    <meta property="og:title" content="Py2Cpp2Py — конвертер Python ↔ C++">
+    <meta property="og:description" content="Переводит Python в C++ и обратно прямо в браузере, без сервера.">
+    <meta property="og:type" content="website">
+    <title>Py2Cpp2Py | Конвертер Python ↔ C++</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d0d;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background-color: #111111;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+        .logo-icon { font-size: 20px; color: #888; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: transparent;
+            color: #ccc;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .btn:hover { background: #1e1e1e; border-color: #666; color: #fff; }
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: 600;
+        }
+        .btn-primary:hover { background: #e0e0e0; border-color: #e0e0e0; }
+        .btn-icon { font-size: 14px; }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 24px;
+            gap: 16px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .converter-row {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-height: 420px;
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .panel-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #888;
+        }
+        .panel-lang {
+            font-size: 12px;
+            color: #666;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .panel-body { flex: 1; position: relative; }
+        .panel-body textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 380px;
+            background: transparent;
+            color: #d4d4d4;
+            border: none;
+            outline: none;
+            resize: none;
+            padding: 16px;
+            font-family: 'Consolas', 'Courier New', 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+        .panel-body textarea::placeholder { color: #555; }
+        .converter-middle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 0 8px;
+        }
+        .arrow-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 1px solid #444;
+            background: #1a1a1a;
+            color: #aaa;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .arrow-btn:hover { background: #2a2a2a; border-color: #666; color: #fff; }
+        .arrow-btn.active { background: #fff; color: #000; border-color: #fff; }
+        .direction-label {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            writing-mode: vertical-rl;
+        }
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #111111;
+            border-top: 1px solid #2a2a2a;
+            font-size: 12px;
+            color: #666;
+        }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
+        .status-dot.ready { background: #888; }
+        .status-dot.processing { background: #aaa; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .panel-py { order: 1; }
+        .converter-middle { order: 2; }
+        .panel-cpp { order: 3; }
+        .converter-row.reversed .panel-py { order: 3; }
+        .converter-row.reversed .panel-cpp { order: 1; }
+        .direction-text {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            writing-mode: vertical-rl;
+            white-space: nowrap;
+        }
+        .panel-body textarea[readonly] { color: #bdbdbd; }
+        .panel-body textarea { white-space: pre; overflow-wrap: normal; overflow-x: auto; }
+        .warnings {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .warnings[hidden] { display: none; }
+        .warnings summary {
+            padding: 10px 16px;
+            background: #1a1a1a;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #aaa;
+            cursor: pointer;
+            user-select: none;
+        }
+        .warnings ul {
+            list-style: none;
+            padding: 8px 16px 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #bbb;
+        }
+        .warnings li::before { content: '— '; color: #666; }
+        .hint { margin-left: auto; color: #555; }
+        .toast {
+            position: fixed; bottom: 60px; right: 24px;
+            background: #2a2a2a; color: #ddd;
+            padding: 10px 20px; border-radius: 6px;
+            font-size: 13px; border: 1px solid #444;
+            opacity: 0; transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none; z-index: 1000;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+        @media (max-width: 900px) {
+            .converter-row { flex-direction: column; min-height: auto; }
+            .converter-middle { flex-direction: row; padding: 8px 0; }
+            .direction-label, .direction-text { writing-mode: horizontal-tb; }
+            .hint { display: none; }
+        }
+        @media (max-width: 600px) {
+            header { flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+            .header-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .header-actions .btn { justify-content: center; }
+            main { padding: 16px; }
+            .panel-body textarea { min-height: 250px; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <span class="logo-icon">&lt;/&gt;</span>
+        Py2Cpp2Py
+    </div>
+    <div class="header-actions">
+        <button class="btn" onclick="clearAll()">🗑 Очистить</button>
+        <button class="btn" onclick="copyResult()">📋 Копировать</button>
+        <button class="btn btn-primary" onclick="convert()">⚡ Конвертировать</button>
+        <button class="btn" onclick="downloadFile()">💾 Скачать файл</button>
+    </div>
+</header>
+<main>
+    <div class="converter-row">
+        <div class="panel panel-py">
+            <div class="panel-header">
+                <span class="panel-title" id="pyTitle">Python (input.py)</span>
+                <span class="panel-lang">Python 3</span>
+            </div>
+            <div class="panel-body">
+                <textarea id="pythonInput" placeholder="# Введите код Python здесь...&#10;def hello():&#10;    print('Hello, World!')&#10;&#10;hello()" spellcheck="false"></textarea>
+            </div>
+        </div>
+        <div class="converter-middle">
+            <button class="arrow-btn active" id="swapBtn" onclick="toggleDirection()" title="Поменять направление" aria-label="Поменять направление">⇄</button>
+            <span class="direction-text" id="directionText">Python → C++</span>
+        </div>
+        <div class="panel panel-cpp">
+            <div class="panel-header">
+                <span class="panel-title" id="cppTitle">C++ (main.cpp)</span>
+                <span class="panel-lang">C++ (GCC)</span>
+            </div>
+            <div class="panel-body">
+                <textarea id="cppOutput" placeholder="// Результат конвертации появится здесь..." spellcheck="false" readonly></textarea>
+            </div>
+        </div>
+    </div>
+    <details class="warnings" id="warnings" open hidden>
+        <summary id="warningsTitle">Предупреждения</summary>
+        <ul id="warningsList"></ul>
+    </details>
+</main>
+<div class="status-bar">
+    <div class="status-dot ready" id="statusDot"></div>
+    <span id="statusText">Готов к работе</span>
+    <span class="hint">Ctrl + Enter — конвертировать</span>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/*__CONVERTERS__*/
+let currentDirection = 'py2cpp';
+function setDirection(dir) {
+    currentDirection = dir;
+    const row = document.querySelector('.converter-row');
+    const pyTitle = document.getElementById('pyTitle');
+    const cppTitle = document.getElementById('cppTitle');
+    const pyInput = document.getElementById('pythonInput');
+    const cppOutput = document.getElementById('cppOutput');
+    const toCpp = dir === 'py2cpp';
+    // поле ввода всегда слева, результат — справа
+    row.classList.toggle('reversed', !toCpp);
+    document.getElementById('directionText').textContent = toCpp ? 'Python → C++' : 'C++ → Python';
+    pyTitle.textContent = toCpp ? 'Python (input.py)' : 'Python (output.py)';
+    cppTitle.textContent = toCpp ? 'C++ (main.cpp)' : 'C++ (input.cpp)';
+    pyInput.readOnly = !toCpp;
+    cppOutput.readOnly = toCpp;
+    pyInput.placeholder = toCpp
+        ? "# Введите код Python здесь...\ndef hello():\n    print('Hello, World!')\n\nhello()"
+        : '# Результат конвертации появится здесь...';
+    cppOutput.placeholder = toCpp
+        ? '// Результат конвертации появится здесь...'
+        : '// Введите код C++ здесь...\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}';
+    showWarnings([]);
+    (toCpp ? pyInput : cppOutput).focus();
+}
+function toggleDirection() {
+    setDirection(currentDirection === 'py2cpp' ? 'cpp2py' : 'py2cpp');
+}
+function showWarnings(list) {
+    const box = document.getElementById('warnings');
+    const ul = document.getElementById('warningsList');
+    ul.innerHTML = '';
+    for (const w of list) {
+        const li = document.createElement('li');
+        li.textContent = w;
+        ul.appendChild(li);
+    }
+    document.getElementById('warningsTitle').textContent = 'Предупреждения (' + list.length + ')';
+    box.hidden = list.length === 0;
+}
+function plural(n, one, few, many) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+}
+function convert() {
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const toCpp = currentDirection === 'py2cpp';
+    const src = document.getElementById(toCpp ? 'pythonInput' : 'cppOutput').value;
+    if (!src.trim()) {
+        showToast(toCpp ? 'Введите код Python для конвертации' : 'Введите код C++ для конвертации');
+        statusText.textContent = 'Нет кода для конвертации';
+        return;
+    }
+    statusDot.className = 'status-dot processing';
+    try {
+        const result = toCpp ? PyToCpp.convert(src) : CppToPy.convert(src);
+        document.getElementById(toCpp ? 'cppOutput' : 'pythonInput').value = result.code;
+        showWarnings(result.warnings);
+        const n = result.warnings.length;
+        statusText.textContent = n
+            ? 'Готово, ' + n + ' ' + plural(n, 'предупреждение', 'предупреждения', 'предупреждений') + ' — проверьте отмеченные строки'
+            : 'Готово, без предупреждений';
+        showToast(toCpp ? 'Конвертация Python → C++ завершена' : 'Конвертация C++ → Python завершена');
+    } catch (e) {
+        console.error(e);
+        statusText.textContent = 'Ошибка конвертации';
+        showToast('Ошибка конвертации: ' + e.message);
+    }
+    statusDot.className = 'status-dot ready';
+}
+function clearAll() {
+    document.getElementById('pythonInput').value = '';
+    document.getElementById('cppOutput').value = '';
+    showWarnings([]);
+    document.getElementById('statusText').textContent = 'Готов к работе';
+    showToast('Очищено');
+}
+function copyResult() {
+    let text = '';
+    if (currentDirection === 'py2cpp') {
+        text = document.getElementById('cppOutput').value;
+    } else {
+        text = document.getElementById('pythonInput').value;
+    }
+    if (!text) { showToast('Нечего копировать'); return; }
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Скопировано в буфер обмена');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Скопировано в буфер обмена');
+    });
+}
+function downloadFile() {
+    let content, filename;
+    if (currentDirection === 'py2cpp') {
+        content = document.getElementById('cppOutput').value;
+        filename = 'main.cpp';
+    } else {
+        content = document.getElementById('pythonInput').value;
+        filename = 'output.py';
+    }
+    if (!content) { showToast('Нечего скачивать'); return; }
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Файл ' + filename + ' скачан');
+}
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            convert();
+            return;
+        }
+        if (this.readOnly) return;
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + 4;
+        }
+    });
+});
+</script>
+</body>
+</html>
